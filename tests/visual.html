@@ -1,0 +1,8 @@
+<!doctype html><meta charset="utf-8"><title>ECLIPSE visual QA</title><style>body{background:#0b1118;color:#ddd;font-family:sans-serif;margin:20px}button{padding:12px;background:#243442;color:#eee;border:1px solid #789;margin:4px;cursor:pointer}canvas{width:100%;aspect-ratio:16/9;display:block}#status{padding:10px}h1{font-size:18px}</style><h1>ECLIPSE · render validation</h1><nav id="buttons"></nav><div id="status"></div><canvas id="view" width="1280" height="720"></canvas><script type="module">
+import {Game,CLASSES,ZONES} from '/engine.js';import {Renderer} from '/renderer.js';
+const game=new Game(),renderer=new Renderer(document.querySelector('canvas'));game.save=()=>{};let stage=1,cls='warrior';
+function render(){try{game.start(cls);game.stage=stage;game.makeRoom();game.player.x=340;game.player.invuln=0;game.useSkill(0);game.useSkill(1);for(let i=0;i<8;i++)game.update(1/60,{});renderer.render(game,.016);document.getElementById('status').textContent=`PASS · ${CLASSES[cls].name} / ${ZONES[stage-1].name}`;}catch(e){document.getElementById('status').textContent='FAIL '+e.stack;throw e;}}
+for(let i=1;i<=5;i++){const b=document.createElement('button');b.textContent=i+' · '+ZONES[i-1].name;b.onclick=()=>{stage=i;render()};document.getElementById('buttons').append(b);}
+for(const id of Object.keys(CLASSES)){const b=document.createElement('button');b.textContent=CLASSES[id].name;b.onclick=()=>{cls=id;render()};document.getElementById('buttons').append(b);}
+render();
+</script>

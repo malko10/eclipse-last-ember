@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { Game, UPGRADE_POOL } from '../dist/engine.js';
+import { Game, UPGRADE_POOL, CLASSES } from '../dist/engine.js';
 
 const saved = new Map();
 globalThis.localStorage = { getItem: key => saved.get(key), setItem: (key, value) => saved.set(key, value) };
@@ -99,5 +99,5 @@ survival.save();
 const persisted = new Game();
 assert.equal(persisted.metaShards, 80);
 assert.equal(persisted.metaBonus, 20);
-assert.equal(persisted.player.maxHp, 120);
+assert.equal(persisted.player.maxHp, CLASSES.warrior.hp + 20);
 console.log('Engine checks passed: physics, double jump, dash, pause, melee, all five stages, upgrades, simulation, persistence.');

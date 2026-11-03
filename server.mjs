@@ -7,6 +7,7 @@ const port=Number(process.env.PORT||4173);
 const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml'};
 http.createServer((req,res)=>{
   let url;try{url=decodeURIComponent(new URL(req.url,'http://localhost').pathname);}catch{res.writeHead(400);res.end();return;}
+  if(url==='/__qa'){fs.readFile(path.join(root,'..','tests','visual.html'),(err,data)=>{res.writeHead(err?404:200,{'Content-Type':'text/html; charset=utf-8'});res.end(err?'Not found':data);});return;}
   const file=path.resolve(root,'.'+(url==='/'?'/index.html':url));
   if(!file.startsWith(root+path.sep)){res.writeHead(403);res.end();return;}
   fs.readFile(file,(err,data)=>{if(err){res.writeHead(404);res.end('Not found');return;}res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':'no-cache'});res.end(data);});

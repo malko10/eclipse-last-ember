@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#0b1219">
   <meta name="description" content="죽음 너머, 다시 타오르다. 월식의 폐허를 돌파하는 2D 로그라이트 액션 플랫포머 ECLIPSE.">
   <title>ECLIPSE · 마지막 불씨</title>
-  <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css">
+  <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 <svg class="svg-defs" aria-hidden="true"><defs>
@@ -29,6 +29,7 @@
     <a class="brand" href="#" id="brand" aria-label="ECLIPSE 홈"><svg><use href="#i-moon"/></svg><span>ECLIPSE<small>마지막 불씨</small></span></a>
     <div class="topbar-center"><span class="live-dot"></span> 2D ACTION ROGUELITE</div>
     <nav class="top-actions" aria-label="게임 설정">
+      <a class="text-btn" id="offline-download" href="ECLIPSE-offline.html?v=2" download="ECLIPSE-v2.html" title="로그인 없이 실행할 HTML 다운로드"><svg style="transform:rotate(90deg)"><use href="#i-arrow"/></svg><span>오프라인</span></a>
       <button class="text-btn" id="help-button"><svg><use href="#i-help"/></svg><span>플레이 가이드</span></button>
       <span class="divider"></span>
       <button class="icon-btn" id="sound-button" aria-label="소리 끄기" aria-pressed="true"><svg><use href="#i-sound"/></svg></button>
@@ -36,32 +37,37 @@
     </nav>
   </header>
   <main>
-    <div class="session-bar"><div><span class="section-marker"></span><span id="session-label">THE FORGOTTEN SANCTUARY</span><span class="session-ko" id="session-ko">잊혀진 성역</span></div><span class="version">VOL. 01 <span>/</span> THE LONG NIGHT</span></div>
+    <div class="session-bar"><div><span class="section-marker"></span><span id="session-label">THE FORGOTTEN SANCTUARY</span><span class="session-ko" id="session-ko">잊혀진 성역</span></div><span class="version">VOL. 02 <span>/</span> THREE EMBERS</span></div>
     <section class="game-frame" id="game-frame" aria-label="ECLIPSE 게임">
       <canvas id="game" width="1280" height="720" tabindex="0" aria-label="2D 액션 플랫포머. A D 이동, 스페이스 점프, J 공격, Shift 대시, E 상호작용."></canvas>
       <div class="frame-corners" aria-hidden="true"></div>
       <div class="hud hidden" id="hud">
-        <div class="health-block"><div class="hud-label"><span>마지막 불씨</span><span id="hp-text">100 / 100</span></div><div class="health-track"><div id="hp-fill"></div></div><div class="hud-under"><span id="dash-status">SHIFT · 대시 준비</span><span id="relic-count">유물 0</span></div></div>
+        <div class="health-block"><div class="hud-label"><span id="player-class-label">마지막 불씨</span><span id="hp-text">100 / 100</span></div><div class="health-track"><div id="hp-fill"></div></div><div class="hud-under"><span id="dash-status">SHIFT · 대시 준비</span><span id="relic-count">유물 0</span></div></div>
         <div class="room-block"><span id="room-index">01 / 05</span><strong id="room-name">잊혀진 성역</strong><div class="room-dots" id="room-dots"><i></i><i></i><i></i><i></i><i></i></div></div>
         <div class="run-block"><div class="currency"><svg><use href="#i-gem"/></svg><span id="shards">0</span><button class="icon-btn" id="pause-button" aria-label="일시정지"><svg><use href="#i-pause"/></svg></button></div><span class="timer" id="timer">00:00</span></div>
       </div>
+      <div class="loadout-hud hidden" id="loadout-hud"><button class="weapon-slot" id="weapon-button" title="F 무기 교체"><span id="weapon-icon"></span><span><small id="class-label">검사</small><strong id="weapon-name">새벽의 장검</strong></span><kbd>F</kbd></button><button class="skill-slot" id="skill-0" title="Q 스킬"><kbd>Q</kbd><span class="skill-symbol"></span><strong class="skill-name"></strong><em class="skill-time">준비</em></button><button class="skill-slot" id="skill-1" title="R 스킬"><kbd>R</kbd><span class="skill-symbol"></span><strong class="skill-name"></strong><em class="skill-time">준비</em></button></div>
+      <div class="zone-intro hidden" id="zone-intro"><small id="zone-intro-index"></small><strong id="zone-intro-name"></strong><span id="zone-intro-desc"></span></div>
       <div class="boss-hud hidden" id="boss-hud"><div><span>월식을 삼킨 자</span><span id="boss-hp"></span></div><div class="boss-track"><i id="boss-fill"></i></div></div>
       <div class="title-screen overlay" id="title-screen">
         <div class="title-content"><div class="eyebrow"><span></span> 어둠이 깨어나는 시간 <span></span></div><h1>ECLIPSE</h1><div class="korean-title">마 지 막 &nbsp; 불 씨</div><p>죽음은 끝이 아니다.<br>다시 타오를 뿐.</p><button class="primary-button" id="start-button"><span>어둠 속으로</span><svg><use href="#i-arrow"/></svg></button><span class="start-hint">ENTER 키로 시작</span></div>
         <div class="title-bottom"><span><i></i> 매번 새로운 여정</span><span id="best-title">첫 번째 전설을 시작하세요</span></div>
       </div>
+      <div class="overlay class-screen hidden" id="class-screen"><div class="class-panel"><div class="class-heading"><div><span class="eyebrow">CHOOSE YOUR EMBER</span><h2>어떤 불씨로 타오를 것인가</h2></div><button class="plain-button" id="class-back">돌아가기 ↗</button></div><div class="class-cards" id="class-cards"></div><div class="class-bottom"><span>각 직업은 무기 2종과 전용 스킬 2종을 사용합니다.</span><span>1 · 2 · 3 선택</span></div></div></div>
       <div class="overlay modal-overlay hidden" id="pause-screen"><div class="menu-panel"><span class="eyebrow">TAKE A BREATH</span><h2>잠시, 숨 고르기</h2><p>불씨는 아직 꺼지지 않았습니다.</p><button class="primary-button" id="resume-button">계속하기 <svg><use href="#i-arrow"/></svg></button><button class="secondary-button" id="restart-button">새로운 여정</button><button class="plain-button" id="pause-help">조작 방법 보기</button></div></div>
       <div class="overlay modal-overlay hidden" id="upgrade-screen"><div class="upgrade-panel"><span class="eyebrow">A GIFT FROM THE DARK</span><h2>어떤 힘을 깨울 것인가</h2><p>이번 여정에 함께할 유물 하나를 선택하세요.</p><div class="upgrade-cards" id="upgrade-cards"></div><span class="choice-hint">1 · 2 · 3 키로 선택할 수 있습니다</span></div></div>
       <div class="overlay modal-overlay hidden" id="end-screen"><div class="menu-panel end-panel"><span class="eyebrow" id="end-eyebrow">THE EMBER REMAINS</span><svg class="end-symbol"><use href="#i-flame"/></svg><h2 id="end-title">불씨는 남아 있다</h2><p id="end-description">어둠은 깊어졌지만, 당신은 더 강해졌습니다.</p><div class="end-stats"><div><span>도달 구역</span><strong id="end-stage">01</strong></div><div><span>쓰러뜨린 적</span><strong id="end-kills">0</strong></div><div><span>생존 시간</span><strong id="end-time">00:00</strong></div></div><div class="meta-reward" id="meta-reward"></div><button class="primary-button" id="retry-button">다시 타오르기 <svg><use href="#i-arrow"/></svg></button><button class="plain-button" id="home-button">성역으로 돌아가기</button></div></div>
       <div class="toast hidden" id="toast" role="status"></div>
       <div class="interaction-hint hidden" id="interaction-hint"><kbd>E</kbd> 다음 구역으로</div>
       <div class="mobile-controls" id="mobile-controls"><div><button data-control="left" aria-label="왼쪽 이동">◀</button><button data-control="right" aria-label="오른쪽 이동">▶</button></div><div><button data-control="interact" aria-label="상호작용">E</button><button data-control="dash" aria-label="대시">대시</button><button data-control="attack" aria-label="공격">공격</button><button data-control="jump" aria-label="점프">점프</button></div></div>
+      <div id="fatal-error" class="overlay modal-overlay hidden" role="alert"><div class="menu-panel"><span class="eyebrow">THE EMBER NEEDS A MOMENT</span><h2>게임을 다시 불러와 주세요</h2><p id="fatal-message"></p><button class="primary-button" onclick="location.reload()">다시 불러오기</button></div></div>
     </section>
-    <div class="controls-bar"><div class="controls"><span><kbd>A</kbd><kbd>D</kbd><em>이동</em></span><span><kbd>SPACE</kbd><em>2단 점프</em></span><span><kbd>J</kbd><em>공격</em></span><span><kbd>SHIFT</kbd><em>대시</em></span><span><kbd>E</kbd><em>상호작용</em></span></div><span class="esc-hint"><kbd>ESC</kbd> 잠시 쉬기</span></div>
-    <div class="journey-notes"><div><span class="note-number">01</span><div><h3>익숙한 길은 없다</h3><p>무작위 유물로 완성하는 나만의 전투.</p></div></div><div><span class="note-number">02</span><div><h3>죽음 너머의 성장</h3><p>모은 불씨는 남아, 다음 여정의 힘으로.</p></div></div><div><span class="note-number">03</span><div><h3>월식의 끝을 향해</h3><p>다섯 구역을 넘어, 심연의 수문장에게.</p></div></div></div>
+    <div class="controls-bar"><div class="controls"><span><kbd>A</kbd><kbd>D</kbd><em>이동</em></span><span><kbd>SPACE</kbd><em>점프</em></span><span><kbd>J</kbd><em>공격</em></span><span><kbd>SHIFT</kbd><em>대시</em></span><span><kbd>Q</kbd><kbd>R</kbd><em>스킬</em></span><span><kbd>F</kbd><em>무기</em></span><span><kbd>E</kbd><em>문</em></span></div><span class="esc-hint"><kbd>ESC</kbd> 정지</span></div>
+    <div class="journey-notes"><div><span class="note-number">01</span><div><h3>세 불씨, 세 가지 전투</h3><p>검사 · 궁수 · 마법사. 무기 6종과 전용 스킬.</p></div></div><div><span class="note-number">02</span><div><h3>당신만의 힘을 깨우다</h3><p>유물 18종, 무기 교체, 죽음 너머의 성장.</p></div></div><div><span class="note-number">03</span><div><h3>매 층, 다른 세계</h3><p>숲부터 공허의 왕좌까지, 다섯 생태계.</p></div></div></div>
   </main>
   <footer><span>ECLIPSE <i>©</i> 2026</span><span>작은 불씨가, 가장 긴 밤을 가른다.</span><span class="footer-tag">HEADPHONES RECOMMENDED <svg><use href="#i-sound"/></svg></span></footer>
 </div>
-<dialog id="help-dialog"><button class="dialog-close icon-btn" aria-label="가이드 닫기" id="close-help">✕</button><span class="eyebrow">FIELD GUIDE</span><h2>어둠을 건너는 방법</h2><p class="guide-intro">모든 적을 쓰러뜨리고, 빛나는 문 앞에서 <kbd>E</kbd>를 누르세요.<br>유물을 선택해 더 강해진 뒤, 다섯 번째 구역의 수문장을 처치하세요.</p><div class="guide-grid"><div><kbd>A</kbd> <kbd>D</kbd><span>좌우 이동 · 방향키도 가능</span></div><div><kbd>SPACE</kbd><span>점프 · 공중에서 한 번 더</span></div><div><kbd>J</kbd><span>검 공격 · 연속 입력으로 3연격</span></div><div><kbd>SHIFT</kbd><span>대시 · 순간적으로 피해 무시</span></div><div><kbd>E</kbd><span>문에 들어가기</span></div><div><kbd>ESC</kbd><span>일시정지 / 계속하기</span></div></div><div class="guide-tip"><svg><use href="#i-flame"/></svg><p>적의 공격 신호를 보고 대시로 피하세요. 획득한 불씨는 저장되며, 20개마다 다음 여정의 최대 체력이 5 증가합니다 (최대 +30).</p></div><button class="primary-button" id="guide-ready">준비 완료 <svg><use href="#i-arrow"/></svg></button></dialog>
-<script type="module" src="app.js"></script>
+<dialog id="help-dialog"><button class="dialog-close icon-btn" aria-label="가이드 닫기" id="close-help">✕</button><span class="eyebrow">FIELD GUIDE · VOL. 02</span><h2>세 가지 불씨, 하나의 여정</h2><p class="guide-intro">검사·궁수·마법사 중 하나를 선택하세요. 적을 모두 쓰러뜨린 뒤, 오른쪽 문에서 <kbd>E</kbd>를 누르면 유물을 선택하고 다음 층으로 갑니다.</p><div class="guide-grid"><div><kbd>A</kbd> <kbd>D</kbd><span>좌우 이동 · 방향키도 가능</span></div><div><kbd>SPACE</kbd><span>점프 · 공중에서 한 번 더</span></div><div><kbd>J</kbd><span>공격 · 누르고 있으면 연속 공격</span></div><div><kbd>SHIFT</kbd><span>무적 대시 · 공중에서도 사용 가능</span></div><div><kbd>Q</kbd> <kbd>R</kbd><span>직업 스킬 · 하단에서 재사용 시간 확인</span></div><div><kbd>F</kbd><span>직업별 무기 2종 즉시 교체</span></div><div><kbd>E</kbd><span>문에 들어가기</span></div><div><kbd>ESC</kbd><span>일시정지 / 계속하기</span></div></div><div class="guide-tip"><svg><use href="#i-bolt"/></svg><p><b>검사</b> · 회전 참격 / 무적 돌진<br><b>궁수</b> · 관통 일제사격 / 화살비<br><b>마법사</b> · 서리 파동 / 운석 낙하<br>원거리 무기는 바라보는 방향의 적을 향해 조준합니다. 획득한 불씨 20개마다 다음 여정의 최대 체력 +5 (최대 +30).</p></div><button class="primary-button" id="guide-ready">준비 완료 <svg><use href="#i-arrow"/></svg></button></dialog>
+<script src="boot.js?v=2"></script>
+<script type="module" src="app.js?v=2"></script>
 </body></html>
