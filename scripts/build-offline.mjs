@@ -20,5 +20,5 @@ let html=read('index.html').replace(/<link rel="stylesheet" href="style.css(?:\?
 if(/<script[^>]+src=/.test(html)||/type="module"/.test(html))throw new Error('Offline build must not load external scripts or modules.');
 fs.writeFileSync(path.join(root,'dist','ECLIPSE-offline.html'),html);
 fs.writeFileSync(path.join(root,'..','ECLIPSE.html'),html);
-fs.writeFileSync(path.join(root,'..','ECLIPSE-v4.html'),html);
+fs.writeFileSync(path.join(root,'..','ECLIPSE-v5.html'),html);
 console.log('Offline HTML built: all runtime, styles, sprites and audio included.');

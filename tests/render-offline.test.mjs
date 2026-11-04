@@ -43,7 +43,7 @@ for(const storageBlocked of [false,true]){
   function frames(count){for(let i=0;i<count;i++){const fn=raf.shift();assert.ok(fn,'animation frame must continue');fn(++paints*16.6667);}}
   frames(2);get('start-button').events.click();assert.ok(!get('class-screen').classList.contains('hidden'),'Start reveals class choice');
   for(const id of ['warrior','archer','mage']){
-    get('pick-'+id).events.click();frames(2);assert.ok(!get('dungeon-screen').classList.contains('hidden'));get('dungeon-forest').events.click();frames(8);assert.ok(get('player-class-label').textContent.includes(id==='warrior'?'검사':id==='archer'?'궁수':'마법사'),`${id} label updates within the HUD's 100 ms refresh interval`);
+    get('pick-'+id).events.click();frames(2);assert.ok(!get('dungeon-screen').classList.contains('hidden'));get('dungeon-frost').events.focus();assert.equal(get('domain-name').textContent,'서리 광산');get('dungeon-forest').events.pointerenter();assert.equal(get('domain-name').textContent,'잊힌 숲');get('dungeon-forest').events.click();frames(8);assert.ok(get('player-class-label').textContent.includes(id==='warrior'?'검사':id==='archer'?'궁수':'마법사'),`${id} label updates within the HUD's 100 ms refresh interval`);
     for(const [code,slot] of [['KeyK',0],['KeyL',1]]){docEvents.keydown({code,repeat:false,target:get('game'),preventDefault(){}});frames(8);docEvents.keyup({code});assert.ok(get('skill-'+slot).querySelector('.skill-time').textContent.endsWith('s'),`${code} casts skill ${slot+1} in offline file`);}
     get('weapon-button').events.click();frames(90);get('pause-button').events.click();get('restart-button').events.click();frames(2);
   }

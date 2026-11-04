@@ -1,6 +1,6 @@
-import {Soundscape,SCORES} from './audio.js?v=4';
-import {Game, CLASSES, WEAPONS, DUNGEONS, UPGRADE_POOL} from './engine.js?v=4';
-import {Renderer, drawClassPortrait} from './renderer.js?v=4';
+import {Soundscape,SCORES} from './audio.js?v=5';
+import {Game, CLASSES, WEAPONS, DUNGEONS, UPGRADE_POOL} from './engine.js?v=5';
+import {Renderer, drawClassPortrait} from './renderer.js?v=5';
 
 const $=id=>document.getElementById(id);
 const canvas=$('game'), frame=$('game-frame');
@@ -24,7 +24,7 @@ function syncMode(){
   if(!game)return;const mode=game.mode;if(mode===selectedMode)return;selectedMode=mode;
   $('title-screen').classList.toggle('hidden',mode!=='title');$('pause-screen').classList.toggle('hidden',mode!=='paused');$('upgrade-screen').classList.toggle('hidden',mode!=='upgrade');$('end-screen').classList.toggle('hidden',!['dead','won'].includes(mode));
   $('class-screen').classList.toggle('hidden',mode!=='select');$('dungeon-screen').classList.toggle('hidden',mode!=='dungeon');
-  $('hud').classList.toggle('hidden',['title','select','dungeon'].includes(mode));$('loadout-hud').classList.toggle('hidden',mode!=='playing');frame.classList.toggle('is-playing',mode==='playing');
+  $('hud').classList.toggle('hidden',['title','select','dungeon'].includes(mode));$('loadout-hud').classList.toggle('hidden',mode!=='playing');frame.classList.toggle('is-playing',mode==='playing');frame.classList.toggle('is-menu',['select','dungeon','upgrade'].includes(mode));
   $('best-title').textContent=game.bestKills>0||game.bestStage>1?`최고 기록 ${Math.min(game.bestStage,5)}구역 · 보유 불씨 ${game.metaShards||0}`:'첫 번째 전설을 시작하세요';
   if(mode==='title'){$('session-label').textContent='THE FORGOTTEN SANCTUARY';$('session-ko').textContent='잊혀진 성역';}
   if(mode==='paused')$('pause-relics').innerHTML=game.upgrades.length?game.upgrades.map(id=>{const u=UPGRADE_POOL.find(u=>u.id===id);return `<span title="${escapeHTML(u.description)}">${escapeHTML(u.name)}</span>`;}).join(''):'아직 획득한 유물이 없습니다.';
@@ -39,11 +39,19 @@ function syncMode(){
   if(mode!=='playing'){$('interaction-hint').classList.add('hidden');keys.clear();touches.clear();edges.clear();}
 }
 function start(){unlockAudio();keys.clear();edges.clear();touches.clear();game.setMode('select');syncMode();}
-function startClass(id){selectedClass=id;keys.clear();edges.clear();touches.clear();game.setMode('dungeon');$('dungeon-class-label').textContent=CLASSES[id].name+'의 여정';syncMode();}
+function startClass(id){selectedClass=id;keys.clear();edges.clear();touches.clear();game.setMode('dungeon');$('dungeon-class-label').textContent=CLASSES[id].name+'의 여정';previewDungeon(game.dungeonId);syncMode();}
 function startDungeon(id){if(!ready)return;unlockAudio();keys.clear();edges.clear();touches.clear();game.start(selectedClass,id);syncMode();canvas.focus();}
 function setupDungeons(){
-  $('dungeon-list').innerHTML=DUNGEONS.map((d,i)=>`<button class="dungeon-card biome-${i+1}" data-dungeon="${d.id}" style="--dungeon-color:${game.zones[i].color}"><span class="dungeon-number">0${i+1}</span><span class="dungeon-title"><strong>${d.name}</strong><small>${d.epithet} · ${d.bossName}</small></span><span class="difficulty"><b>${'◆'.repeat(d.rank)}${'◇'.repeat(5-d.rank)}</b><small>${d.difficulty} · 5개 방</small></span><kbd>${i+1}</kbd><span class="dungeon-arrow">↗</span></button>`).join('');
-  $('dungeon-list').querySelectorAll('[data-dungeon]').forEach(b=>b.addEventListener('click',()=>startDungeon(b.dataset.dungeon)));
+  $('dungeon-list').innerHTML=DUNGEONS.map((d,i)=>`<button class="dungeon-card biome-${i+1}" data-dungeon="${d.id}" style="--dungeon-color:${game.zones[i].color}"><span class="dungeon-number">${['I','II','III','IV','V'][i]}</span><span class="dungeon-title"><strong>${d.name}</strong><small>${d.bossName}</small></span><span class="difficulty"><b>${'●'.repeat(d.rank)}${'○'.repeat(5-d.rank)}</b><small>${d.difficulty} · 5개 방</small></span><kbd>${i+1}</kbd><span class="dungeon-arrow">→</span></button>`).join('');
+  $('dungeon-list').querySelectorAll('[data-dungeon]').forEach(b=>{b.addEventListener('click',()=>startDungeon(b.dataset.dungeon));b.addEventListener('pointerenter',()=>previewDungeon(b.dataset.dungeon));b.addEventListener('focus',()=>previewDungeon(b.dataset.dungeon));});
+}
+function previewDungeon(id){
+  if(game.mode!=='dungeon')return;
+  const d=DUNGEONS.find(d=>d.id===id)||DUNGEONS[0];
+  game.dungeon=d;game.dungeonId=d.id;game.biome=d.rank;game.stage=1;game.classId=selectedClass;game.resetPlayer();game.makeRoom(true);
+  frame.style.setProperty('--zone-color',game.zone.color);
+  $('domain-sigil').innerHTML=icon(['wing','gem','flame','bolt','moon'][d.rank-1]);$('domain-en').textContent=game.zone.en;$('domain-name').textContent=d.name;$('domain-story').textContent=game.zone.tag;$('domain-quote').textContent='“'+d.line+'”';$('domain-rule').textContent=d.difficulty+' · 5개의 방 · '+d.bossName;
+  $('dungeon-list').querySelectorAll('[data-dungeon]').forEach(b=>{b.classList.toggle('selected',b.dataset.dungeon===d.id);});
 }
 $('dungeon-back').addEventListener('click',()=>{game.setMode('select');syncMode();});
 $('boss-intro-skip').addEventListener('click',()=>{if(game.introTime>0){game.finishIntro();canvas.focus();}});

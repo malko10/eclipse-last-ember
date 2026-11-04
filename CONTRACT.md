@@ -1,5 +1,11 @@
 # ECLIPSE game contract
 
+## Version 5: Moonblade
+
+Warrior basic attacks set swordWavePending; updatePlayer releases one traveling crescent after 34% swing progress. Each attack owns a fresh hitIds Set shared by its melee swing and wave, so a target cannot receive both damage instances from the same strike. Sword waves have rectangular width/height collision, finite range/life and limited pierce; greatswords and third hits are larger, and echo strengthens the third wave. Swapping or casting cancels a pending wave. The accepted warriorPose animation stays unchanged.
+
+The UI uses a single sanctuary theme stylesheet, compact corner HUD, bottom action dock below the walkable ground, etched menu cards and a dungeon lore panel. Focus/hover on a dungeon calls previewDungeon to change the background and lore without saving progression. Small screens give selection menus extra vertical space. Native offline tests cover preview focus/hover alongside all class starts.
+
 ## Version 4: Domains
 
 `DUNGEONS` defines five separate runs. `start(classId, dungeonId)` selects a class and dungeon; `stage` remains the room number (1–5), while `biome` and `zone` remain fixed for the entire run. Dungeon data owns difficulty rank, enemy HP/damage multipliers, boss HP/name, dialogue and three attack patterns. Class selection is followed by mode `dungeon`; keyboard 1–5 selects the destination. Renderer and music use `biome`, never room number, for the theme.

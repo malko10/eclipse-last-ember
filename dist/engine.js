@@ -19,7 +19,7 @@ export const DUNGEONS = [
 ];
 const PATTERN_NAMES={roots:'가시뿌리 · 표식에서 벗어나기',seeds:'독가시 씨앗 · 점프 또는 검으로 제거',charge:'뿔 돌진 · 대시로 통과',icicles:'고드름 낙하 · 빛나는 선을 피하기',shards:'빙정 부채 · 탄막 사이로 이동',slam:'대지 강타 · 충격파 점프',furnace:'용광로 배출 · 붉은 바닥을 피하기',bombard:'불꽃 포격 · 낙하 지점 이동',lightning:'낙뢰 심판 · 표식에서 이동',gust:'칼바람 · 낮은 틈으로 회피',dive:'뇌익 급습 · 대시로 통과',rifts:'공허 균열 · 보라색 표식을 피하기',eclipse:'월식 탄막 · 구체 사이로 이동',blink:'그림자 도약 · 잔상 반대편으로 이동'};
 export const CLASSES = {
-  warrior:{id:'warrior',name:'검사',en:'THE VANGUARD',color:'#e7a184',hp:115,speed:350,damage:24,icon:'sword',role:'근접 · 균형',description:'검끝으로 길을 열고, 폭풍처럼 베어낸다.',passive:'체력 115 · 3연격 · 근접 공격으로 탄막 파괴',weapons:['blade','greatsword'],skills:[{name:'삼연 회오리',description:'몸을 회전해 3번 베고 적의 탄막을 지웁니다.',cooldown:5.5,icon:'sword'},{name:'여명 가르기',description:'무적 돌진 후 거대한 마무리 참격을 날립니다.',cooldown:10,icon:'flame'}]},
+  warrior:{id:'warrior',name:'검사',en:'THE VANGUARD',color:'#e7a184',hp:115,speed:350,damage:24,icon:'sword',role:'근접 · 균형',description:'검끝으로 길을 열고, 폭풍처럼 베어낸다.',passive:'체력 115 · 3연격 · 검기 · 근접 공격으로 탄막 파괴',weapons:['blade','greatsword'],skills:[{name:'삼연 회오리',description:'몸을 회전해 3번 베고 적의 탄막을 지웁니다.',cooldown:5.5,icon:'sword'},{name:'여명 가르기',description:'무적 돌진 후 거대한 마무리 참격을 날립니다.',cooldown:10,icon:'flame'}]},
   archer:{id:'archer',name:'궁수',en:'THE WAYFARER',color:'#9ed6b2',hp:90,speed:390,damage:20,icon:'wing',role:'원거리 · 기동',description:'바람을 읽고, 어둠의 심장에 화살을 꽂는다.',passive:'체력 90 · 빠른 이동 · 전방의 적을 향해 조준',weapons:['longbow','repeater'],skills:[{name:'사냥꾼의 낙인',description:'관통 5연사. 맞은 적은 5초간 받는 피해 +25%.',cooldown:5,icon:'wing'},{name:'별무리 폭우',description:'표식이 찍힌 적을 우선 조준해 화살 폭풍을 부릅니다.',cooldown:11,icon:'moon'}]},
   mage:{id:'mage',name:'마법사',en:'THE STARKEEPER',color:'#c4aff5',hp:85,speed:335,damage:25,icon:'moon',role:'원거리 · 광역',description:'잊힌 별의 언어로, 새로운 새벽을 부른다.',passive:'체력 85 · 유도 마법탄 · 원소 효과',weapons:['emberstaff','froststaff'],skills:[{name:'빙결의 성좌',description:'주변 적을 동결. 다시 공격하거나 해동되면 파쇄됩니다.',cooldown:6,icon:'shield'},{name:'종말의 유성',description:'거대 운석이 폭발한 자리에 불길이 남습니다.',cooldown:12,icon:'flame'}]},
 };
@@ -39,7 +39,7 @@ export const UPGRADE_POOL = [
   { id: 'rapid', name: '번개의 맥박', subtitle: '공격 가속', description: '공격 대기시간이 25% 감소합니다. 치명타 확률 +10%.', icon: 'bolt', rarity: 'RARE' },
   { id: 'ember', name: '꺼지지 않는 불씨', subtitle: '화염 부여', description: '무기 공격이 적을 불태워 3초 동안 추가 피해를 줍니다.', icon: 'flame', rarity: 'EPIC' },
   { id: 'vital', name: '오래된 생명', subtitle: '체력 강화', description: '최대 체력이 30 증가하고 체력을 40 회복합니다.', icon: 'heart', rarity: 'RARE' },
-  { id: 'echo', name: '달빛의 잔상', subtitle: '달빛 발사', description: '세 번째 연속 공격이 적을 관통하는 달빛 투사체를 발사합니다.', icon: 'moon', rarity: 'EPIC' },
+  { id: 'echo', name: '달빛의 잔상', subtitle: '달빛 발사', description: '검사의 3타 검기를 강화합니다. 원거리 직업은 3타에 관통탄을 추가합니다.', icon: 'moon', rarity: 'EPIC' },
   { id: 'shell', name: '별의 가호', subtitle: '피해 감소', description: '받는 피해가 25% 감소합니다. 즉시 체력 15 회복.', icon: 'shield', rarity: 'RARE' },
   { id: 'storm', name: '섬광의 발걸음', subtitle: '공격 대시', description: '대시가 닿은 적에게 피해를 줍니다. 대시 대기시간 -25%.', icon: 'bolt', rarity: 'EPIC' },
   { id: 'moon', name: '운명의 파편', subtitle: '치명타 강화', description: '치명타 확률이 25% 증가합니다. 치명타는 2배 피해를 줍니다.', icon: 'gem', rarity: 'EPIC' },
@@ -188,7 +188,7 @@ export class Game {
     this.cleared = false;this.hitChain=0;this.chainTimer=0;
     this.portal = { x: 1150, y: FLOOR - 112, w: 62, h: 112, active: false };
     const p = this.player;
-    Object.assign(p, { x: 110, y: FLOOR - p.h, vx: 0, vy: 0, face: 1, grounded: true, jumps: 0, coyote: 0.1, jumpBuffer: 0, attackTime: 0, attackCooldown: 0, dashTime: 0, dashCooldown: 0, invuln: 1.2, combo: 0, comboWindow: 0, trail: [],skillCooldowns:[0,0],rushTime:0,castTime:0,castSkill:-1 });
+    Object.assign(p, { x: 110, y: FLOOR - p.h, vx: 0, vy: 0, face: 1, grounded: true, jumps: 0, coyote: 0.1, jumpBuffer: 0, attackTime: 0, attackCooldown: 0, dashTime: 0, dashCooldown: 0, invuln: 1.2, combo: 0, comboWindow: 0, swordWavePending:false, trail: [],skillCooldowns:[0,0],rushTime:0,castTime:0,castSkill:-1 });
     if (this.stage === 5) {
       this.boss = this.spawnEnemy('boss', 960, FLOOR - 112);this.introTime=4.8;this.boss.cooldown=1.1;this.emit('sfx','bossintro');
     } else {
@@ -294,7 +294,7 @@ export class Game {
     for (const timer of ['attackTime', 'attackCooldown', 'dashTime', 'dashCooldown', 'invuln', 'comboWindow', 'jumpBuffer','swapCooldown','rushTime','castTime','riposte','windstep']) p[timer] = Math.max(0, p[timer] - dt);
     if(endingRush){const pc=center(p);this.areaHit(pc.x+p.face*50,pc.y,150*p.rangeScale,p.damage*1.8*p.skillPower);this.effects.push({type:'cleave',x:pc.x,y:pc.y,r:150,color:'#ffe3a1',face:p.face,life:.42,maxLife:.42});this.emit('sfx','heavy');p.attackTime=p.attackDuration=.26;p.combo=3;}
     p.skillCooldowns = p.skillCooldowns.map(t=>Math.max(0,t-dt));
-    if(input.swapPressed && p.swapCooldown<=0){const ids=this.classDef.weapons;p.weaponId=ids[(ids.indexOf(p.weaponId)+1)%ids.length];p.weapon=WEAPONS[p.weaponId];p.swapCooldown=.35;p.attackTime=0;this.emit('notify',`${p.weapon.name} · ${p.weapon.detail}`);this.emit('sfx','upgrade');}
+    if(input.swapPressed && p.swapCooldown<=0){const ids=this.classDef.weapons;p.weaponId=ids[(ids.indexOf(p.weaponId)+1)%ids.length];p.weapon=WEAPONS[p.weaponId];p.swapCooldown=.35;p.attackTime=0;p.swordWavePending=false;this.emit('notify',`${p.weapon.name} · ${p.weapon.detail}`);this.emit('sfx','upgrade');}
     if(input.skill1Pressed)this.useSkill(0);
     if(input.skill2Pressed)this.useSkill(1);
     p.coyote = p.grounded ? 0.1 : Math.max(0, p.coyote - dt);
@@ -357,6 +357,7 @@ export class Game {
           this.onWeaponHit(e);
         }
       });
+      if(p.swordWavePending&&swingProgress>=.34)this.releaseSwordWave();
       // A sword can destroy ordinary enemy bolts; large boss waves require a dash or jump.
       this.projectiles.forEach(b => {
         if (b.hostile && !b.wave && overlap(this.attackBox, { x: b.x - b.r, y: b.y - b.r, w: b.r * 2, h: b.r * 2 })) {
@@ -375,11 +376,15 @@ export class Game {
     p.comboWindow = 0.8;
     p.attackTime = p.attackDuration = (p.combo === 3 ? 0.3 : 0.23)*(p.weaponId==='greatsword'?1.35:1);
     p.attackCooldown = (p.combo === 3 ? 0.35 : 0.24) * p.attackSpeed * p.weapon.rate;
-    p.hitIds.clear();
+    p.hitIds=new Set();p.swordWavePending=true;
     this.emit('sfx', p.combo === 3 ? 'heavy' : 'sword');
-    if (p.combo === 3 && this.upgrades.includes('echo')) {
-      this.projectiles.push({ x: p.x + 15 + p.face * 32, y: p.y + 18, vx: p.face * 760, vy: 0, r: 18, hostile: false, color: '#b4fff0', life: 1.6, damage: p.damage * 1.25, hitIds: new Set() });
-    }
+  }
+
+  releaseSwordWave(){
+    const p=this.player,heavy=p.combo===3,big=p.weaponId==='greatsword',echo=heavy&&this.upgrades.includes('echo');
+    const life=(big?.65:.52)*(echo?1.4:1),height=(big?66:48)*(heavy?1.3:1)*(echo?1.3:1)*p.rangeScale;
+    this.projectiles.push({x:p.x+p.w/2+p.face*54,y:p.y+23,vx:p.face*(big?620:780),vy:0,r:height/2,width:22,height,hostile:false,shape:'swordwave',color:echo?'#b8fff0':heavy?'#ffd39c':'#d8ede3',life,maxLife:life,damage:p.damage*p.weapon.damage*(heavy?.65:.4)*(p.strikeBoost||1)*(echo?1.6:1)*(heavy&&this.upgrades.includes('cleaver')?1.45:1),hitIds:p.hitIds,pierce:echo?8:heavy?4:2,meleeSource:true,tilt:p.combo===2?-.24:.24});
+    p.swordWavePending=false;
   }
 
   moveBody(e, dt, isPlayer = false) {
@@ -441,8 +446,9 @@ export class Game {
     p.castTime=p.castDuration=index===0?.55:.8;p.castSkill=index;
     this.texts.push({x:pc.x,y:p.y-25,text:skill.name,color:p.color,life:1});
     if(p.classId==='warrior'){
+      p.swordWavePending=false;
       if(index===0){this.fields.push({type:'cyclone',x:pc.x,y:pc.y,r:165*p.rangeScale,delay:0,life:.56,tick:0,damage:p.damage*1.05*power,color:'#ffe3b5'});p.invuln=Math.max(p.invuln,.5);}
-      else {p.rushTime=.48;p.rushHits.clear();p.invuln=.8;p.hitIds.clear();this.effects.push({type:'dashline',x:pc.x,y:pc.y,r:360,face:p.face,color:'#ffd3a0',life:.5,maxLife:.5});}
+      else {p.rushTime=.48;p.rushHits.clear();p.invuln=.8;p.hitIds=new Set();this.effects.push({type:'dashline',x:pc.x,y:pc.y,r:360,face:p.face,color:'#ffd3a0',life:.5,maxLife:.5});}
     }else if(p.classId==='archer'){
       const target=this.aimTarget(),tc=target?center(target):{x:clamp(pc.x+p.face*260,60,1220),y:570};
       if(index===0){const angle=Math.atan2(tc.y-pc.y,tc.x-pc.x);for(let i=-2;i<=2;i++)this.shootPlayer(angle+i*.13,{pierce:8,multiplier:1.3*power,speed:950,color:'#d6ffe7',mark:true});this.effects.push({type:'fan',x:pc.x,y:pc.y,r:140,angle,color:'#c8ffe0',life:.4,maxLife:.4});}
@@ -687,12 +693,13 @@ export class Game {
       if(b.homing&&!b.hostile){const target=this.enemies.filter(e=>e.hp>0&&!b.hitIds.has(e.id)).sort((a,c)=>Math.hypot(center(a).x-b.x,center(a).y-b.y)-Math.hypot(center(c).x-b.x,center(c).y-b.y))[0];if(target){const tc=center(target),angle=Math.atan2(tc.y-b.y,tc.x-b.x),speed=Math.hypot(b.vx,b.vy);b.vx=move(b.vx,Math.cos(angle)*speed,700*dt);b.vy=move(b.vy,Math.sin(angle)*speed,700*dt);}}
       b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt;
       if (b.life <= 0) continue;
-      const box = { x: b.x - b.r, y: b.y - b.r, w: b.r * 2, h: b.r * 2 };
+      const bw=b.width||b.r*2,bh=b.height||b.r*2;
+      const box = { x: b.x-bw/2, y: b.y-bh/2, w:bw, h:bh };
       if (b.hostile) {
         if (overlap(box, this.player)) { this.hurtPlayer(b.damage || 10, Math.sign(b.vx)); b.life = 0; }
       } else {
         for (const e of this.enemies) {
-          if (e.hp > 0 && !b.hitIds.has(e.id) && overlap(box, e)) {b.hitIds.add(e.id);if(b.mark)e.marked=5;const crit=this.random()<this.player.crit+(e.marked>0&&this.upgrades.includes('hunter')?.4:0);this.damageEnemy(e,b.damage*(crit?2:1),Math.sign(b.vx),crit);this.onWeaponHit(e);if(b.slow)e.slow=2.5;if(b.splash){this.effects.push({type:'blast',x:b.x,y:b.y,r:b.splash*this.player.rangeScale,color:b.color,life:.3,maxLife:.3});for(const other of this.enemies)if(other!==e&&other.hp>0&&Math.hypot(center(other).x-b.x,center(other).y-b.y)<b.splash*this.player.rangeScale)this.damageEnemy(other,b.damage*.5,Math.sign(b.vx));}if(b.pierce!==undefined&&--b.pierce<=0){b.life=0;break;}}
+          if (e.hp > 0 && !b.hitIds.has(e.id) && overlap(box, e)) {b.hitIds.add(e.id);if(b.mark)e.marked=5;const crit=this.random()<this.player.crit+(e.marked>0&&this.upgrades.includes('hunter')?.4:0);this.damageEnemy(e,b.damage*(crit?2:1),Math.sign(b.vx),crit);if(e.hp<=0&&b.meleeSource&&this.upgrades.includes('executioner'))this.player.skillCooldowns=this.player.skillCooldowns.map(cd=>Math.max(0,cd-1));this.onWeaponHit(e);if(b.slow)e.slow=2.5;if(b.splash){this.effects.push({type:'blast',x:b.x,y:b.y,r:b.splash*this.player.rangeScale,color:b.color,life:.3,maxLife:.3});for(const other of this.enemies)if(other!==e&&other.hp>0&&Math.hypot(center(other).x-b.x,center(other).y-b.y)<b.splash*this.player.rangeScale)this.damageEnemy(other,b.damage*.5,Math.sign(b.vx));}if(b.pierce!==undefined&&--b.pierce<=0){b.life=0;break;}}
         }
       }
     }

@@ -10,7 +10,7 @@ http.createServer((req,res)=>{
   // Local-only preview of the real app's boss introduction and combat UI.
   if(url==='/__boss'||url==='/__boss-app.js'){
     const source=url==='/__boss'
-      ?fs.readFileSync(path.join(root,'index.html'),'utf8').replace('src="app.js?v=4"','src="/__boss-app.js"')
+      ?fs.readFileSync(path.join(root,'index.html'),'utf8').replace(/src="app.js\?v=\d+"/,'src="/__boss-app.js"')
       :fs.readFileSync(path.join(root,'app.js'),'utf8')+'\n'+fs.readFileSync(path.join(root,'../tests/boss-preview.mjs'),'utf8');
     res.writeHead(200,{'Content-Type':url==='/__boss'?'text/html; charset=utf-8':'text/javascript; charset=utf-8','Cache-Control':'no-cache'});res.end(source);return;
   }
