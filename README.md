@@ -2,6 +2,14 @@
 
 월식 아래 다섯 구역을 돌파하는 브라우저 2D 로그라이트 액션 플랫포머입니다. 별도 패키지 설치 없이 실행됩니다.
 
+## GitHub 배포와 수정 반영
+
+- 게임: https://malko10.github.io/eclipse-last-ember/
+- 소스: https://github.com/malko10/eclipse-last-ember
+- 배포 상태: https://github.com/malko10/eclipse-last-ember/actions
+
+`main`에 푸시하면 GitHub Actions가 문법·게임플레이를 검사하고 오프라인 HTML을 생성한 뒤 `dist/`를 GitHub Pages에 배포합니다. 이 작업 폴더의 `origin`은 위 GitHub 저장소입니다. 여기서 게임 수정을 요청하면 검사 후 커밋·푸시까지 진행하도록 `AGENTS.md`에 지침을 기록했습니다. 외부에서 변경한 내용이 있으면 먼저 가져와 통합합니다. 파일 저장만으로 미완성 코드를 푸시하지는 않습니다.
+
 ## 실행
 
 로그인 없이 실행하려면 `dist/ECLIPSE-offline.html` 또는 상위 폴더의 `ECLIPSE.html`을 브라우저로 엽니다. 외부 스크립트·모듈·글꼴 없이 동작하는 단일 파일입니다. 변경 후 `node scripts/build-offline.mjs`로 다시 생성합니다.
