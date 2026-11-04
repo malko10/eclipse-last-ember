@@ -40,6 +40,8 @@ const target = game.enemies[0];
 game.player.x = target.x - 45;
 game.player.y = target.y - 6;
 game.update(1 / 60, { attackPressed: true });
+assert.equal(target.hp,target.maxHp,'sword wind-up does not damage before the blade swings');
+tick(game, .08);
 assert.ok(target.hp < target.maxHp, 'nearby sword strike damages an enemy');
 const firstHit = target.hp;
 tick(game, 0.1);
@@ -47,6 +49,7 @@ assert.equal(target.hp, firstHit, 'one attack cannot hit same enemy repeatedly')
 tick(game, 0.3);
 game.player.x = target.x - 45;
 game.update(1 / 60, { attackPressed: true });
+tick(game,.08);
 assert.ok(target.hp <= 0, 'two connected strikes defeat first-room crawler');
 assert.equal(game.kills, 1);
 

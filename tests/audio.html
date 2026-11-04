@@ -1,0 +1,25 @@
+<!doctype html><meta charset="utf-8"><title>ECLIPSE audio validation</title><style>body{background:#0d1722;color:#d3e8dc;font:16px monospace;padding:30px}button{font:inherit;padding:15px}pre{white-space:pre-wrap;line-height:1.8}</style><h1>Original score · native Web Audio validation</h1><button id="run">Render five scores</button><pre id="result">Ready</pre><script type="module">
+import {Soundscape,SCORES} from '/audio.js?v=3';
+document.getElementById('run').onclick=async()=>{
+  const out=document.getElementById('result');out.textContent='Rendering…';
+  try{
+    const results=[];
+    for(let stage=1;stage<=5;stage++){
+      const ctx=new OfflineAudioContext(2,22050*12,22050);
+      // Render the production graph with a real browser audio engine; only its
+      // state getter is adapted so notes may be scheduled before offline render.
+      const adapter=new Proxy(ctx,{get(t,k){if(k==='state')return 'running';const v=Reflect.get(t,k,t);return typeof v==='function'?v.bind(t):v;}});
+      const Native=window.AudioContext;window.AudioContext=function(){return adapter;};
+      const sound=new Soundscape();try{sound.unlock();}finally{window.AudioContext=Native;}
+      sound.stage=stage;sound.intensity=stage===5?1:.65;
+      const score=SCORES[stage-1];for(let step=0;step<32;step++){const delay=step*60/score.bpm/2;if(delay<11)sound.scoreStep(score,step,delay);}
+      for(const type of ['warrior1','warrior2','archer1','archer2','mage1','mage2','impact','shatter','slam'])sound.play(type,{heavy:true});
+      const buffer=await ctx.startRendering(),data=buffer.getChannelData(0);let peak=0,sum=0;
+      for(const v of data){if(!Number.isFinite(v))throw Error('Non-finite audio sample');peak=Math.max(peak,Math.abs(v));sum+=v*v;}
+      const rms=Math.sqrt(sum/data.length);if(rms<.002||peak>=.99)throw Error(`stage ${stage}: silence or clipping, ${rms}/${peak}`);
+      results.push(`PASS ${score.name} · ${score.bpm} BPM · RMS ${rms.toFixed(4)} · peak ${peak.toFixed(4)} · no clipping`);out.textContent=results.join('\n');
+    }
+    out.textContent+='\nPASS: all 5 distinct scores and class/impact sound effects rendered with native Web Audio.';
+  }catch(e){out.textContent='FAIL '+e.stack;console.error(e);}
+};
+</script>

@@ -7,8 +7,9 @@ const read=file=>fs.readFileSync(path.join(root,'dist',file),'utf8');
 const stripExports=source=>source.replace(/^export (?=(?:class|const|function)\b)/gm,'');
 const engine=stripExports(read('engine.js'));
 const renderer=stripExports(read('renderer.js'));
+const audio=stripExports(read('audio.js'));
 const app=read('app.js').replace(/^import .*;\r?\n/gm,'');
-const script=`(function(){'use strict';\nconst {Game,CLASSES,WEAPONS}=(()=>{${engine}\nreturn {Game,CLASSES,WEAPONS};})();\nconst {Renderer,drawClassPortrait}=(()=>{${renderer}\nreturn {Renderer,drawClassPortrait};})();\n${app}\n})();`;
+const script=`(function(){'use strict';\nconst {Soundscape,SCORES}=(()=>{${audio}\nreturn {Soundscape,SCORES};})();\nconst {Game,CLASSES,WEAPONS}=(()=>{${engine}\nreturn {Game,CLASSES,WEAPONS};})();\nconst {Renderer,drawClassPortrait}=(()=>{${renderer}\nreturn {Renderer,drawClassPortrait};})();\n${app}\n})();`;
 new vm.Script(script,{filename:'ECLIPSE-offline.js'});
 const css=read('style.css').replace(/^@import[^;]+;\s*/,'');
 let html=read('index.html').replace(/<link rel="stylesheet" href="style.css(?:\?v=\d+)?">/,()=>`<style>${css}</style>`)
@@ -19,5 +20,5 @@ let html=read('index.html').replace(/<link rel="stylesheet" href="style.css(?:\?
 if(/<script[^>]+src=/.test(html)||/type="module"/.test(html))throw new Error('Offline build must not load external scripts or modules.');
 fs.writeFileSync(path.join(root,'dist','ECLIPSE-offline.html'),html);
 fs.writeFileSync(path.join(root,'..','ECLIPSE.html'),html);
-fs.writeFileSync(path.join(root,'..','ECLIPSE-v2.html'),html);
+fs.writeFileSync(path.join(root,'..','ECLIPSE-v3.html'),html);
 console.log('Offline HTML built: all runtime, styles, sprites and audio included.');

@@ -11,9 +11,9 @@ export const ZONES = [
   {name:'공허의 왕좌',en:'THRONE OF THE ECLIPSE',tag:'별이 사라진 곳, 마지막 수문장',color:'#d8a6ef',monsters:['공허 망령','그림자 까마귀','월식의 사도'],weather:'void'},
 ];
 export const CLASSES = {
-  warrior:{id:'warrior',name:'검사',en:'THE VANGUARD',color:'#e7a184',hp:115,speed:350,damage:24,icon:'sword',role:'근접 · 균형',description:'검끝으로 길을 열고, 폭풍처럼 베어낸다.',passive:'체력 115 · 3연격 · 근접 공격으로 탄막 파괴',weapons:['blade','greatsword'],skills:[{name:'회전 참격',description:'주변의 적을 크게 베고 탄막을 지웁니다.',cooldown:5.5,icon:'sword'},{name:'여명의 돌진',description:'무적 상태로 전방을 돌파하며 연속 피해를 줍니다.',cooldown:10,icon:'flame'}]},
-  archer:{id:'archer',name:'궁수',en:'THE WAYFARER',color:'#9ed6b2',hp:90,speed:390,damage:20,icon:'wing',role:'원거리 · 기동',description:'바람을 읽고, 어둠의 심장에 화살을 꽂는다.',passive:'체력 90 · 빠른 이동 · 전방의 적을 향해 조준',weapons:['longbow','repeater'],skills:[{name:'관통 일제사격',description:'부채꼴로 다섯 발의 관통 화살을 발사합니다.',cooldown:5,icon:'wing'},{name:'별빛 화살비',description:'전방 가장 가까운 적 주변에 화살비를 내립니다.',cooldown:11,icon:'moon'}]},
-  mage:{id:'mage',name:'마법사',en:'THE STARKEEPER',color:'#c4aff5',hp:85,speed:335,damage:25,icon:'moon',role:'원거리 · 광역',description:'잊힌 별의 언어로, 새로운 새벽을 부른다.',passive:'체력 85 · 유도 마법탄 · 원소 효과',weapons:['emberstaff','froststaff'],skills:[{name:'서리 파동',description:'주변 적을 얼리고 밀어내는 냉기 폭발.',cooldown:6,icon:'shield'},{name:'운석 낙하',description:'조준 지점에 거대한 운석을 떨어뜨립니다.',cooldown:12,icon:'flame'}]},
+  warrior:{id:'warrior',name:'검사',en:'THE VANGUARD',color:'#e7a184',hp:115,speed:350,damage:24,icon:'sword',role:'근접 · 균형',description:'검끝으로 길을 열고, 폭풍처럼 베어낸다.',passive:'체력 115 · 3연격 · 근접 공격으로 탄막 파괴',weapons:['blade','greatsword'],skills:[{name:'삼연 회오리',description:'몸을 회전해 3번 베고 적의 탄막을 지웁니다.',cooldown:5.5,icon:'sword'},{name:'여명 가르기',description:'무적 돌진 후 거대한 마무리 참격을 날립니다.',cooldown:10,icon:'flame'}]},
+  archer:{id:'archer',name:'궁수',en:'THE WAYFARER',color:'#9ed6b2',hp:90,speed:390,damage:20,icon:'wing',role:'원거리 · 기동',description:'바람을 읽고, 어둠의 심장에 화살을 꽂는다.',passive:'체력 90 · 빠른 이동 · 전방의 적을 향해 조준',weapons:['longbow','repeater'],skills:[{name:'사냥꾼의 낙인',description:'관통 5연사. 맞은 적은 5초간 받는 피해 +25%.',cooldown:5,icon:'wing'},{name:'별무리 폭우',description:'표식이 찍힌 적을 우선 조준해 화살 폭풍을 부릅니다.',cooldown:11,icon:'moon'}]},
+  mage:{id:'mage',name:'마법사',en:'THE STARKEEPER',color:'#c4aff5',hp:85,speed:335,damage:25,icon:'moon',role:'원거리 · 광역',description:'잊힌 별의 언어로, 새로운 새벽을 부른다.',passive:'체력 85 · 유도 마법탄 · 원소 효과',weapons:['emberstaff','froststaff'],skills:[{name:'빙결의 성좌',description:'주변 적을 동결. 다시 공격하거나 해동되면 파쇄됩니다.',cooldown:6,icon:'shield'},{name:'종말의 유성',description:'거대 운석이 폭발한 자리에 불길이 남습니다.',cooldown:12,icon:'flame'}]},
 };
 export const WEAPONS = {
   blade:{id:'blade',name:'새벽의 장검',detail:'빠른 3연격',damage:1,rate:1,reach:96,color:'#f1d8b1'},
@@ -80,7 +80,7 @@ export class Game {
     this.flash = 0;
     this.hitStop = 0;
     this.pendingActions = {};
-    this.cleared = false;
+    this.cleared = false;this.hitChain=0;this.chainTimer=0;
     this.attackBox = null;
     this.id = 0;
     this.classId = 'warrior';
@@ -114,7 +114,7 @@ export class Game {
       hitIds: new Set(), dashHitIds: new Set(), trail: [], memory,
       classId:cls.id, weaponId:cls.weapons[0], weapon:WEAPONS[cls.weapons[0]],color:cls.color,
       skillCooldowns:[0,0],skillTimes:[0,0],skillPower:1,cooldownScale:1,rangeScale:1,
-      swapCooldown:0,rushTime:0,rushHits:new Set(),
+      swapCooldown:0,rushTime:0,rushHits:new Set(),attackDuration:0,castTime:0,castDuration:0,castSkill:-1,
     };
   }
 
@@ -129,7 +129,7 @@ export class Game {
     this.resetPlayer();
     this.makeRoom();
     this.setMode('playing');
-    this.emit('notify', `${this.classDef.name} · ${this.player.weapon.name} / F 무기 교체 · Q R 스킬`);
+    this.emit('notify', `${this.classDef.name} · J 공격 / K L 스킬 / F 무기 교체`);
     this.emit('sfx', 'start');
   }
 
@@ -163,10 +163,10 @@ export class Game {
     this.hitStop = 0;
     this.pendingActions = {};
     this.attackBox = null;
-    this.cleared = false;
+    this.cleared = false;this.hitChain=0;this.chainTimer=0;
     this.portal = { x: 1150, y: FLOOR - 112, w: 62, h: 112, active: false };
     const p = this.player;
-    Object.assign(p, { x: 110, y: FLOOR - p.h, vx: 0, vy: 0, face: 1, grounded: true, jumps: 0, coyote: 0.1, jumpBuffer: 0, attackTime: 0, attackCooldown: 0, dashTime: 0, dashCooldown: 0, invuln: 1.2, combo: 0, comboWindow: 0, trail: [],skillCooldowns:[0,0],rushTime:0 });
+    Object.assign(p, { x: 110, y: FLOOR - p.h, vx: 0, vy: 0, face: 1, grounded: true, jumps: 0, coyote: 0.1, jumpBuffer: 0, attackTime: 0, attackCooldown: 0, dashTime: 0, dashCooldown: 0, invuln: 1.2, combo: 0, comboWindow: 0, trail: [],skillCooldowns:[0,0],rushTime:0,castTime:0,castSkill:-1 });
     if (this.stage === 5) {
       this.boss = this.spawnEnemy('boss', 950, FLOOR - 112);
       this.spawnEnemy('flyer', 670, 420);
@@ -267,14 +267,16 @@ export class Game {
 
   updatePlayer(dt, input) {
     const p = this.player;
-    for (const timer of ['attackTime', 'attackCooldown', 'dashTime', 'dashCooldown', 'invuln', 'comboWindow', 'jumpBuffer','swapCooldown','rushTime']) p[timer] = Math.max(0, p[timer] - dt);
+    const endingRush=p.rushTime>0&&p.rushTime<=dt;
+    for (const timer of ['attackTime', 'attackCooldown', 'dashTime', 'dashCooldown', 'invuln', 'comboWindow', 'jumpBuffer','swapCooldown','rushTime','castTime']) p[timer] = Math.max(0, p[timer] - dt);
+    if(endingRush){const pc=center(p);this.areaHit(pc.x+p.face*50,pc.y,150*p.rangeScale,p.damage*1.8*p.skillPower);this.effects.push({type:'cleave',x:pc.x,y:pc.y,r:150,color:'#ffe3a1',face:p.face,life:.42,maxLife:.42});this.emit('sfx','heavy');p.attackTime=p.attackDuration=.26;p.combo=3;}
     p.skillCooldowns = p.skillCooldowns.map(t=>Math.max(0,t-dt));
     if(input.swapPressed && p.swapCooldown<=0){const ids=this.classDef.weapons;p.weaponId=ids[(ids.indexOf(p.weaponId)+1)%ids.length];p.weapon=WEAPONS[p.weaponId];p.swapCooldown=.35;p.attackTime=0;this.emit('notify',`${p.weapon.name} · ${p.weapon.detail}`);this.emit('sfx','upgrade');}
     if(input.skill1Pressed)this.useSkill(0);
     if(input.skill2Pressed)this.useSkill(1);
     p.coyote = p.grounded ? 0.1 : Math.max(0, p.coyote - dt);
     if (input.jumpPressed) p.jumpBuffer = 0.13;
-    if (input.attackPressed && p.attackCooldown <= 0 && p.dashTime <= 0) this.attack();
+    if (input.attackPressed && p.attackCooldown <= 0 && p.dashTime <= 0 && p.castTime<=0) this.attack();
     const dir = Number(!!input.right) - Number(!!input.left);
     if (input.dashPressed && p.dashCooldown <= 0) {
       if (dir) p.face = dir;
@@ -319,7 +321,8 @@ export class Game {
     }
     this.moveBody(p, dt, true);
     p.trail = p.trail.filter(t => (t.life -= dt) > 0);
-    if (p.attackTime > 0 && p.classId==='warrior') {
+    const swingProgress=1-p.attackTime/(p.attackDuration||.2);
+    if (p.attackTime > 0 && p.classId==='warrior' && swingProgress>=.2 && swingProgress<.85) {
       const reach = p.weapon.reach * p.rangeScale * (p.combo===3?1.23:1);
       this.attackBox = { x: p.face > 0 ? p.x + 10 : p.x + p.w - reach - 10, y: p.y - 18, w: reach, h: p.h + 38 };
       this.enemies.forEach(e => {
@@ -345,7 +348,7 @@ export class Game {
     if(p.classId!=='warrior'){this.rangedAttack();return;}
     p.combo = p.comboWindow > 0 ? (p.combo % 3) + 1 : 1;
     p.comboWindow = 0.8;
-    p.attackTime = p.combo === 3 ? 0.21 : 0.17;
+    p.attackTime = p.attackDuration = (p.combo === 3 ? 0.3 : 0.23)*(p.weaponId==='greatsword'?1.35:1);
     p.attackCooldown = (p.combo === 3 ? 0.35 : 0.24) * p.attackSpeed * p.weapon.rate;
     p.hitIds.clear();
     this.emit('sfx', p.combo === 3 ? 'heavy' : 'sword');
@@ -381,13 +384,13 @@ export class Game {
 
   shootPlayer(angle,options={}) {
     const p=this.player,w=p.weapon,speed=options.speed||w.speed||700;
-    this.projectiles.push({x:p.x+p.w/2+p.face*20,y:p.y+20,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,r:(options.r||5)*p.rangeScale,hostile:false,color:options.color||w.color,life:2.6,damage:p.damage*(options.multiplier||w.damage||1),hitIds:new Set(),pierce:options.pierce??w.pierce??1,shape:p.classId==='archer'?'arrow':'orb',splash:options.splash??w.splash??0,slow:options.slow??w.slow??false,homing:options.homing??(p.classId==='mage'&&p.weaponId==='emberstaff')});
+    this.projectiles.push({x:p.x+p.w/2+p.face*20,y:p.y+20,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,r:(options.r||5)*p.rangeScale,hostile:false,color:options.color||w.color,life:2.6,damage:p.damage*(options.multiplier||w.damage||1),hitIds:new Set(),pierce:options.pierce??w.pierce??1,shape:p.classId==='archer'?'arrow':'orb',splash:options.splash??w.splash??0,slow:options.slow??w.slow??false,homing:options.homing??(p.classId==='mage'&&p.weaponId==='emberstaff'),mark:options.mark||false});
   }
 
   rangedAttack() {
     const p=this.player,target=this.aimTarget(),pc=center(p);
     const angle=target?Math.atan2(center(target).y-pc.y,center(target).x-pc.x):p.face>0?0:Math.PI;
-    p.combo=p.comboWindow>0?(p.combo%3)+1:1;p.comboWindow=1.2;p.attackTime=.2;p.attackCooldown=.25*p.weapon.rate*p.attackSpeed;
+    p.combo=p.comboWindow>0?(p.combo%3)+1:1;p.comboWindow=1.2;p.attackTime=p.attackDuration=.25;p.attackCooldown=.25*p.weapon.rate*p.attackSpeed;
     if(p.weaponId==='froststaff')for(const spread of [-.14,0,.14])this.shootPlayer(angle+spread,{r:6});
     else this.shootPlayer(angle,{r:p.classId==='mage'?8:4});
     if(p.combo===3&&this.upgrades.includes('echo'))this.shootPlayer(angle,{r:12,pierce:8,multiplier:1.5,color:'#caffec',homing:false});
@@ -406,17 +409,18 @@ export class Game {
     const skill=this.classDef.skills[index];p.skillCooldowns[index]=skill.cooldown*p.cooldownScale;p.skillTimes[index]=p.skillCooldowns[index];
     if(this.upgrades.includes('spirit'))p.invuln=Math.max(p.invuln,1);
     const pc=center(p),power=p.skillPower;
-    this.emit('sfx',index===1?'ultimate':'skill');
+    this.emit('sfx',p.classId+(index+1));
+    p.castTime=p.castDuration=index===0?.55:.8;p.castSkill=index;
     this.texts.push({x:pc.x,y:p.y-25,text:skill.name,color:p.color,life:1});
     if(p.classId==='warrior'){
-      if(index===0){this.areaHit(pc.x,pc.y,170*p.rangeScale,p.damage*2.6*power);this.effects.push({type:'ring',x:pc.x,y:pc.y,r:170*p.rangeScale,color:'#ffe3b5',life:.45,maxLife:.45});this.projectiles=this.projectiles.filter(b=>!b.hostile||Math.hypot(b.x-pc.x,b.y-pc.y)>180);p.invuln=Math.max(p.invuln,.3);}
-      else {p.rushTime=.52;p.rushHits.clear();p.invuln=.7;this.effects.push({type:'slash',x:pc.x+p.face*180,y:pc.y,r:200,color:'#ffd3a0',life:.45,maxLife:.45});}
+      if(index===0){this.fields.push({type:'cyclone',x:pc.x,y:pc.y,r:165*p.rangeScale,delay:0,life:.56,tick:0,damage:p.damage*1.05*power,color:'#ffe3b5'});p.invuln=Math.max(p.invuln,.5);}
+      else {p.rushTime=.48;p.rushHits.clear();p.invuln=.8;p.hitIds.clear();this.effects.push({type:'dashline',x:pc.x,y:pc.y,r:360,face:p.face,color:'#ffd3a0',life:.5,maxLife:.5});}
     }else if(p.classId==='archer'){
       const target=this.aimTarget(),tc=target?center(target):{x:clamp(pc.x+p.face*260,60,1220),y:570};
-      if(index===0){const angle=Math.atan2(tc.y-pc.y,tc.x-pc.x);for(let i=-2;i<=2;i++)this.shootPlayer(angle+i*.13,{pierce:8,multiplier:1.45*power,speed:950,color:'#d6ffe7'});}
-      else this.fields.push({type:'rain',x:tc.x,y:tc.y,r:135,delay:.45,life:2.5,tick:0,damage:p.damage*.65*power,color:'#b8efd1'});
+      if(index===0){const angle=Math.atan2(tc.y-pc.y,tc.x-pc.x);for(let i=-2;i<=2;i++)this.shootPlayer(angle+i*.13,{pierce:8,multiplier:1.3*power,speed:950,color:'#d6ffe7',mark:true});this.effects.push({type:'fan',x:pc.x,y:pc.y,r:140,angle,color:'#c8ffe0',life:.4,maxLife:.4});}
+      else{const marked=this.enemies.find(e=>e.hp>0&&e.marked>0),at=marked?center(marked):tc;this.fields.push({type:'rain',x:at.x,y:at.y,r:145,delay:.45,life:2.5,tick:0,damage:p.damage*.6*power,color:'#b8efd1'});}
     }else{
-      if(index===0){this.areaHit(pc.x,pc.y,220,p.damage*1.9*power,3.5);this.effects.push({type:'ring',x:pc.x,y:pc.y,r:220,color:'#a7eaff',life:.65,maxLife:.65});p.invuln=Math.max(p.invuln,.35);}
+      if(index===0){this.areaHit(pc.x,pc.y,220,p.damage*1.2*power,3.5);for(const e of this.enemies)if(e.hp>0&&Math.hypot(center(e).x-pc.x,center(e).y-pc.y)<220){e.frozen=e.type==='boss'?.4:1.1;e.shatterDamage=p.damage*1.3*power;}this.effects.push({type:'frost',x:pc.x,y:pc.y,r:220,color:'#a7eaff',life:.7,maxLife:.7});p.invuln=Math.max(p.invuln,.35);}
       else{const target=this.aimTarget(),tc=target?center(target):{x:clamp(pc.x+p.face*240,60,1220),y:570};this.fields.push({type:'meteor',x:tc.x,y:tc.y,r:175,delay:.75,life:1,tick:0,damage:p.damage*4.4*power,color:'#f5ad83'});}
     }
     this.burst(pc.x,pc.y,p.color,20,160);return true;
@@ -428,11 +432,26 @@ export class Game {
   }
 
   updateFields(dt) {
-    for(const f of this.fields){f.delay-=dt;if(f.delay>0)continue;f.life-=dt;f.tick-=dt;if(f.tick<=0){f.tick=f.type==='rain'?.22:10;this.areaHit(f.x,f.y,f.r,f.damage);this.effects.push({type:f.type==='rain'?'rain':'blast',x:f.x,y:f.y,r:f.r,color:f.color,life:.45,maxLife:.45});this.burst(f.x,f.y,f.color,f.type==='rain'?6:50,f.type==='rain'?100:330);if(f.type==='meteor')this.emit('sfx','slam');}}
+    const spawned=[];
+    for(const f of this.fields){
+      f.delay-=dt;if(f.delay>0)continue;f.life-=dt;f.tick-=dt;
+      if(f.type==='cyclone'){const pc=center(this.player);f.x=pc.x;f.y=pc.y;this.projectiles=this.projectiles.filter(b=>!b.hostile||Math.hypot(b.x-f.x,b.y-f.y)>f.r);}
+      if(f.tick<=0){
+        f.tick=f.type==='rain'?.28:f.type==='cyclone'?.2:f.type==='embers'?.45:10;
+        if(f.type==='embers'){for(const e of this.enemies)if(e.hp>0&&Math.hypot(center(e).x-f.x,center(e).y-f.y)<f.r)this.damageEnemy(e,f.damage,0,false,true);}
+        else this.areaHit(f.x,f.y,f.r,f.damage);
+        this.effects.push({type:f.type==='meteor'?'blast':f.type,x:f.x,y:f.y,r:f.r,color:f.color,life:f.type==='meteor'?.65:.42,maxLife:f.type==='meteor'?.65:.42});
+        this.burst(f.x,f.y,f.color,f.type==='meteor'?60:6,f.type==='meteor'?330:100);
+        if(f.type==='meteor'){this.emit('sfx','slam');this.shake=13;spawned.push({type:'embers',x:f.x,y:f.y,r:160,delay:0,life:2.6,tick:.35,damage:this.player.damage*.4*this.player.skillPower,color:'#f9a269'});}
+      }
+    }
+    this.fields.push(...spawned);
     this.fields=this.fields.filter(f=>f.life>0);
   }
 
   updateEnemy(e, dt) {
+    e.marked=Math.max(0,(e.marked||0)-dt);
+    if(e.frozen>0){e.frozen=Math.max(0,e.frozen-dt);e.hitFlash=Math.max(0,e.hitFlash-dt);if(e.frozen===0)this.shatter(e);return;}
     e.slow=Math.max(0,(e.slow||0)-dt);if(e.slow>0)dt*=.45;
     e.hitFlash = Math.max(0, e.hitFlash - dt);
     e.attackTime = Math.max(0, e.attackTime - dt);
@@ -565,20 +584,32 @@ export class Game {
     this.moveBody(e, dt);
   }
 
+  shatter(e){
+    const amount=e.shatterDamage||this.player.damage;e.frozen=0;e.shatterDamage=0;
+    const ec=center(e);this.effects.push({type:'frost',x:ec.x,y:ec.y,r:85,color:'#bbf4ff',life:.4,maxLife:.4});
+    this.burst(ec.x,ec.y,'#bdf4ff',24,240);this.emit('sfx','shatter');
+    this.damageEnemy(e,amount,0,false,true);
+  }
+
   damageEnemy(e, amount, direction = 0, crit = false, dot = false) {
     if (e.hp <= 0) return;
+    if(!dot&&e.frozen>0){this.shatter(e);if(e.hp<=0)return;}
+    if(e.marked>0&&!dot)amount*=1.25;
     if(this.upgrades.includes('execution')&&e.hp/e.maxHp<.35)amount*=1.5;
     const damage = Math.round(amount);
     e.hp -= damage;
     e.hitFlash = 0.12;
     if (!dot) {
-      e.stun = e.type === 'boss' ? 0 : 0.17;
-      if (e.type !== 'boss') { e.vx = direction * 180; e.vy = -90; }
-      this.shake = Math.max(this.shake, crit ? 7 : 4);
-      this.hitStop = crit ? 0.045 : 0.026;
-      this.emit('sfx', 'hit');
+      const heavy=damage>=40,kill=e.hp<=0;
+      e.stun = e.type === 'boss' ? 0 : heavy?.25:.17;
+      if (e.type !== 'boss') { e.vx = direction * (heavy?280:170); e.vy = heavy?-140:-75; }
+      this.shake = Math.max(this.shake, kill?7:heavy||crit?6:3.5);
+      this.hitStop = Math.max(this.hitStop,kill?.07:heavy||crit?.055:.032);
+      this.emit('impact',{heavy,crit,kill});
+      this.effects.push({type:'impact',x:e.x+e.w/2,y:e.y+e.h*.45,r:heavy?62:38,color:crit?'#ffe1a0':this.player.color,face:direction||1,life:.24,maxLife:.24,heavy});
+      this.hitChain=(this.chainTimer>0?this.hitChain||0:0)+1;this.chainTimer=2.2;
     }
-    this.texts.push({ x: e.x + e.w / 2, y: e.y - 7, text: String(damage) + (crit ? '!' : ''), color: dot ? '#eea078' : crit ? '#f6d699' : '#e9f5ee', life: 0.7 });
+    this.texts.push({ x: e.x + e.w / 2+(this.random()-.5)*15, y: e.y - 7, text: String(damage) + (crit ? '!' : ''), color: dot ? '#eea078' : crit ? '#f6d699' : '#e9f5ee', life: .8,maxLife:.8,heavy:!dot&&(damage>=40||crit),vx:direction*22 });
     this.burst(e.x + e.w / 2, e.y + e.h * 0.45, dot ? '#ed9262' : '#d8e8c4', dot ? 3 : 12, dot ? 75 : 220);
     if (e.hp <= 0) {
       this.kills++;
@@ -622,7 +653,7 @@ export class Game {
         if (overlap(box, this.player)) { this.hurtPlayer(b.damage || 10, Math.sign(b.vx)); b.life = 0; }
       } else {
         for (const e of this.enemies) {
-          if (e.hp > 0 && !b.hitIds.has(e.id) && overlap(box, e)) {b.hitIds.add(e.id);const crit=this.random()<this.player.crit;this.damageEnemy(e,b.damage*(crit?2:1),Math.sign(b.vx),crit);this.onWeaponHit(e);if(b.slow)e.slow=2.5;if(b.splash){this.effects.push({type:'blast',x:b.x,y:b.y,r:b.splash*this.player.rangeScale,color:b.color,life:.3,maxLife:.3});for(const other of this.enemies)if(other!==e&&other.hp>0&&Math.hypot(center(other).x-b.x,center(other).y-b.y)<b.splash*this.player.rangeScale)this.damageEnemy(other,b.damage*.5,Math.sign(b.vx));}if(b.pierce!==undefined&&--b.pierce<=0){b.life=0;break;}}
+          if (e.hp > 0 && !b.hitIds.has(e.id) && overlap(box, e)) {b.hitIds.add(e.id);if(b.mark)e.marked=5;const crit=this.random()<this.player.crit;this.damageEnemy(e,b.damage*(crit?2:1),Math.sign(b.vx),crit);this.onWeaponHit(e);if(b.slow)e.slow=2.5;if(b.splash){this.effects.push({type:'blast',x:b.x,y:b.y,r:b.splash*this.player.rangeScale,color:b.color,life:.3,maxLife:.3});for(const other of this.enemies)if(other!==e&&other.hp>0&&Math.hypot(center(other).x-b.x,center(other).y-b.y)<b.splash*this.player.rangeScale)this.damageEnemy(other,b.damage*.5,Math.sign(b.vx));}if(b.pierce!==undefined&&--b.pierce<=0){b.life=0;break;}}
         }
       }
     }
@@ -698,10 +729,11 @@ export class Game {
   }
 
   updateEffects(dt) {
+    this.chainTimer=Math.max(0,(this.chainTimer||0)-dt);
     this.effects=this.effects.filter(e=>(e.life-=dt)>0);
     for (const p of this.particles) { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= Math.pow(0.25, dt); p.vy += 240 * dt; p.life -= dt; }
     this.particles = this.particles.filter(p => p.life > 0);
-    for (const t of this.texts) { t.y -= 32 * dt; t.life -= dt; }
+    for (const t of this.texts) { t.y -= 32 * dt;t.x+=(t.vx||0)*dt; t.life -= dt; }
     this.texts = this.texts.filter(t => t.life > 0);
   }
 }
