@@ -56,7 +56,7 @@ assert.equal(fatal.player.hp, 0, 'a death frame cannot be followed by drop heali
 
 // A simple keyboard-input bot fights the final room using base damage and HP.
 // It only reacts to existing telegraphs and performs ordinary jumps/dashes.
-const fight = new Game(); fight.random = () => 0.5; fight.start(); fight.stage = 5; fight.makeRoom();
+const fight = new Game(); fight.random = () => 0.5; fight.start(); fight.stage = 5; fight.makeRoom();fight.finishIntro();
 fight.player.hp = fight.player.maxHp = 100;
 let frames = 0;
 for (; frames < 60 * 90 && fight.mode === 'playing' && fight.enemies.length; frames++) {

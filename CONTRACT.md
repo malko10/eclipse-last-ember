@@ -1,5 +1,15 @@
 # ECLIPSE game contract
 
+## Version 4: Domains
+
+`DUNGEONS` defines five separate runs. `start(classId, dungeonId)` selects a class and dungeon; `stage` remains the room number (1–5), while `biome` and `zone` remain fixed for the entire run. Dungeon data owns difficulty rank, enemy HP/damage multipliers, boss HP/name, dialogue and three attack patterns. Class selection is followed by mode `dungeon`; keyboard 1–5 selects the destination. Renderer and music use `biome`, never room number, for the theme.
+
+Room 5 has a dedicated boss. `introTime` protects both actors from movement/damage; E/Enter or the skip button calls `finishIntro()`. Pause freezes this timer. Each boss cycles windup → attack → recover with visible hazards or projectile tells, then enrages below 45% HP. `hazards` store delayed, finite-life hitboxes and are cleared on boss death. `boss-intro` is a real HTML overlay synchronized by app.js; the renderer adds cinematic bars and glow.
+
+There are 30 relics: 18 common and four per class. `classId` filters eligible rewards; `rollRelics()` includes an unowned class relic when available. Wrong-class choices are rejected. Warrior relics alter dodge riposte/third hit/heal/cooldowns, archer relics alter arrows/marks/dash speed/piercing, and mage relics alter freeze/meteor/burn/cooldowns. `warriorPose()` supplies shoulder, elbow, wrist and sword angle; the blade is attached to the hand with separate wrist rotation and a supporting hand for greatswords.
+
+Local `/__boss` appends tests/boss-preview.mjs to the normal app for visual QA, and is never part of the deployed dist directory. Native canvas tests resolve the package relative to Node's runtime, with ECLIPSE_CANVAS_PACKAGE as an override.
+
 ## Version 3: Resonance
 
 Skill inputs are K / L; J is exclusively basic attack. Player attackDuration provides normalized wind-up / active swing / recovery animation. Melee collision begins after 20% of the swing; arm, hilt and blade move together. castTime/castDuration/castSkill animate class skills. Warrior uses a following cyclone field and a rush finisher; archer projectiles mark enemies (5 seconds, +25% incoming direct damage) and rain prioritizes marks; mage freezes/shatters and leaves an ember field after meteor impact. Enemy frozen/marked timers and impact effect data drive rendering. `impact` events carry heavy/crit/kill for layered audio. `audio.js` exports Soundscape and SCORES, included in both hosted modules and the classic-script offline bundle. User audio preferences persist separately from progression. Native browser score validation lives at local-only /__audio.

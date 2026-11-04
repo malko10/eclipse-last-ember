@@ -1,12 +1,12 @@
-import {Soundscape,SCORES} from './audio.js?v=3';
-import {Game, CLASSES, WEAPONS} from './engine.js?v=3';
-import {Renderer, drawClassPortrait} from './renderer.js?v=3';
+import {Soundscape,SCORES} from './audio.js?v=4';
+import {Game, CLASSES, WEAPONS, DUNGEONS, UPGRADE_POOL} from './engine.js?v=4';
+import {Renderer, drawClassPortrait} from './renderer.js?v=4';
 
 const $=id=>document.getElementById(id);
 const canvas=$('game'), frame=$('game-frame');
 const renderer=new Renderer(canvas);
 const keys=new Set(), edges=new Set(), touches=new Set();
-let game, last=performance.now(), toastTime=0, sound=true, helpResume=false, selectedMode='', attackClock=0, hudClock=0,zoneIntroTime=0,ready=false;
+let game, last=performance.now(), toastTime=0, sound=true, helpResume=false, selectedMode='',selectedClass='warrior', attackClock=0, hudClock=0,zoneIntroTime=0,ready=false;
 try { sound=localStorage.getItem('eclipse-sound')!=='off'; } catch {}
 const fmt=n=>`${Math.floor(n/60).toString().padStart(2,'0')}:${Math.floor(n%60).toString().padStart(2,'0')}`;
 const icon=name=>`<svg aria-hidden="true"><use href="#i-${['sword','bolt','heart','wing','flame','gem','shield','moon'].includes(name)?name:'moon'}"/></svg>`;
@@ -23,22 +23,30 @@ function choose(index){if(game.mode!=='upgrade')return;const choice=game.choices
 function syncMode(){
   if(!game)return;const mode=game.mode;if(mode===selectedMode)return;selectedMode=mode;
   $('title-screen').classList.toggle('hidden',mode!=='title');$('pause-screen').classList.toggle('hidden',mode!=='paused');$('upgrade-screen').classList.toggle('hidden',mode!=='upgrade');$('end-screen').classList.toggle('hidden',!['dead','won'].includes(mode));
-  $('class-screen').classList.toggle('hidden',mode!=='select');
-  $('hud').classList.toggle('hidden',['title','select'].includes(mode));$('loadout-hud').classList.toggle('hidden',mode!=='playing');frame.classList.toggle('is-playing',mode==='playing');
+  $('class-screen').classList.toggle('hidden',mode!=='select');$('dungeon-screen').classList.toggle('hidden',mode!=='dungeon');
+  $('hud').classList.toggle('hidden',['title','select','dungeon'].includes(mode));$('loadout-hud').classList.toggle('hidden',mode!=='playing');frame.classList.toggle('is-playing',mode==='playing');
   $('best-title').textContent=game.bestKills>0||game.bestStage>1?`최고 기록 ${Math.min(game.bestStage,5)}구역 · 보유 불씨 ${game.metaShards||0}`:'첫 번째 전설을 시작하세요';
   if(mode==='title'){$('session-label').textContent='THE FORGOTTEN SANCTUARY';$('session-ko').textContent='잊혀진 성역';}
+  if(mode==='paused')$('pause-relics').innerHTML=game.upgrades.length?game.upgrades.map(id=>{const u=UPGRADE_POOL.find(u=>u.id===id);return `<span title="${escapeHTML(u.description)}">${escapeHTML(u.name)}</span>`;}).join(''):'아직 획득한 유물이 없습니다.';
   if(mode==='upgrade'){
-    $('upgrade-cards').innerHTML=game.choices.map((u,i)=>`<button class="upgrade-card" data-choice="${i}"><kbd>${i+1}</kbd><div class="card-icon">${icon(u.icon)}</div><span class="rarity">${u.rarity==='EPIC'?'영웅 유물 · EPIC':'희귀 유물 · RARE'}</span><h3>${escapeHTML(u.name)}</h3><p>${escapeHTML(u.description)}</p></button>`).join('');
+    $('upgrade-cards').innerHTML=game.choices.map((u,i)=>`<button class="upgrade-card" data-choice="${i}"><kbd>${i+1}</kbd><div class="card-icon">${icon(u.icon)}</div><span class="rarity">${u.classId?CLASSES[u.classId].name+' 전용 · ':''}${u.rarity==='EPIC'?'EPIC':'RARE'}</span><h3>${escapeHTML(u.name)}</h3><p>${escapeHTML(u.description)}</p></button>`).join('');
     $('upgrade-cards').querySelectorAll('button').forEach((b,i)=>b.addEventListener('click',()=>choose(i)));
   }
   if(mode==='dead'||mode==='won'){
-    const won=mode==='won';$('end-eyebrow').textContent=won?'DAWN WILL FIND US':'THE EMBER REMAINS';$('end-title').textContent=won?'당신이 새벽을 깨웠다':'불씨는 남아 있다';$('end-description').textContent=won?'가장 긴 밤이 끝났습니다. 당신의 전설은 이제 시작입니다.':'잠깐의 어둠일 뿐. 남겨진 불씨가 다음 여정을 밝힙니다.';
+    const won=mode==='won';$('end-eyebrow').textContent=won?'DAWN WILL FIND US':'THE EMBER REMAINS';$('end-title').textContent=won?'당신이 새벽을 깨웠다':'불씨는 남아 있다';$('end-description').textContent=won?`${game.dungeon.name}의 ${game.dungeon.bossName}을 쓰러뜨렸습니다. 다른 던전에도 도전하세요.`:'잠깐의 어둠일 뿐. 남겨진 불씨가 다음 여정을 밝힙니다.';
     $('end-stage').textContent=String(game.stage).padStart(2,'0')+' / 05';$('end-kills').textContent=game.kills;$('end-time').textContent=fmt(game.runTime);$('meta-reward').textContent=`누적 불씨 ${game.metaShards||0} · 다음 여정 최대 체력 +${game.metaBonus||0}`;
   }
   if(mode!=='playing'){$('interaction-hint').classList.add('hidden');keys.clear();touches.clear();edges.clear();}
 }
 function start(){unlockAudio();keys.clear();edges.clear();touches.clear();game.setMode('select');syncMode();}
-function startClass(id){if(!ready){notify('화면을 준비하고 있습니다. 잠시 후 다시 선택해주세요.');return;}unlockAudio();keys.clear();edges.clear();touches.clear();game.start(id);syncMode();canvas.focus();}
+function startClass(id){selectedClass=id;keys.clear();edges.clear();touches.clear();game.setMode('dungeon');$('dungeon-class-label').textContent=CLASSES[id].name+'의 여정';syncMode();}
+function startDungeon(id){if(!ready)return;unlockAudio();keys.clear();edges.clear();touches.clear();game.start(selectedClass,id);syncMode();canvas.focus();}
+function setupDungeons(){
+  $('dungeon-list').innerHTML=DUNGEONS.map((d,i)=>`<button class="dungeon-card biome-${i+1}" data-dungeon="${d.id}" style="--dungeon-color:${game.zones[i].color}"><span class="dungeon-number">0${i+1}</span><span class="dungeon-title"><strong>${d.name}</strong><small>${d.epithet} · ${d.bossName}</small></span><span class="difficulty"><b>${'◆'.repeat(d.rank)}${'◇'.repeat(5-d.rank)}</b><small>${d.difficulty} · 5개 방</small></span><kbd>${i+1}</kbd><span class="dungeon-arrow">↗</span></button>`).join('');
+  $('dungeon-list').querySelectorAll('[data-dungeon]').forEach(b=>b.addEventListener('click',()=>startDungeon(b.dataset.dungeon)));
+}
+$('dungeon-back').addEventListener('click',()=>{game.setMode('select');syncMode();});
+$('boss-intro-skip').addEventListener('click',()=>{if(game.introTime>0){game.finishIntro();canvas.focus();}});
 function restart(){unlockAudio();keys.clear();edges.clear();touches.clear();game.restart();syncMode();canvas.focus();}
 function pause(){if(game.mode==='playing')game.pause();else if(game.mode==='paused'&&!$('help-dialog').open){game.resume();canvas.focus();}syncMode();}
 function showHelp(){helpResume=game.mode==='playing';if(helpResume)game.pause();syncMode();$('help-dialog').showModal();}
@@ -56,13 +64,13 @@ $('help-button').addEventListener('click',showHelp);$('pause-help').addEventList
 $('brand').addEventListener('click',e=>{e.preventDefault();if(game.mode==='playing')pause();else if(['dead','won','title'].includes(game.mode))makeGame();});
 $('sound-button').addEventListener('click',()=>{sound=!sound;try{localStorage.setItem('eclipse-sound',sound?'on':'off');}catch{}soundButton();audio.setEnabled(sound);if(sound)audio.play('shard');});
 $('fullscreen-button').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await frame.requestFullscreen();}catch{notify('이 브라우저에서는 전체 화면을 사용할 수 없습니다.');}});
-const controlled=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyA','KeyD','KeyW','KeyJ','KeyK','KeyE','KeyL','KeyF','ShiftLeft','ShiftRight','Escape','Enter','Digit1','Digit2','Digit3'];
+const controlled=['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyA','KeyD','KeyW','KeyJ','KeyK','KeyE','KeyL','KeyF','ShiftLeft','ShiftRight','Escape','Enter','Digit1','Digit2','Digit3','Digit4','Digit5'];
 document.addEventListener('keydown',e=>{
   if($('help-dialog').open)return;
   if(e.target instanceof HTMLInputElement)return;
   if(e.target instanceof HTMLButtonElement&&['Enter','Space'].includes(e.code))return;
   if(controlled.includes(e.code))e.preventDefault();
-  if(!e.repeat){edges.add(e.code);if(e.code==='Escape'){if(game.mode==='select')makeGame();else pause();return;}if(e.code==='Enter'&&game.mode==='title'){start();return;}if(e.code==='Enter'&&['dead','won'].includes(game.mode)){start();return;}if(game.mode==='select'&&/^Digit[123]$/.test(e.code)){startClass(Object.keys(CLASSES)[Number(e.code.slice(-1))-1]);return;}if(game.mode==='upgrade'&&/^Digit[123]$/.test(e.code)){choose(Number(e.code.slice(-1))-1);return;}}
+  if(!e.repeat){edges.add(e.code);if(e.code==='Escape'){if(game.mode==='dungeon'){game.setMode('select');syncMode();}else if(game.mode==='select')makeGame();else pause();return;}if(e.code==='Enter'&&game.mode==='title'){start();return;}if(e.code==='Enter'&&['dead','won'].includes(game.mode)){start();return;}if(game.mode==='dungeon'&&/^Digit[12345]$/.test(e.code)){startDungeon(DUNGEONS[Number(e.code.slice(-1))-1].id);return;}if(game.mode==='select'&&/^Digit[123]$/.test(e.code)){startClass(Object.keys(CLASSES)[Number(e.code.slice(-1))-1]);return;}if(game.mode==='upgrade'&&/^Digit[123]$/.test(e.code)){choose(Number(e.code.slice(-1))-1);return;}}
   keys.add(e.code);if(controlled.includes(e.code))unlockAudio();
 });
 document.addEventListener('keyup',e=>keys.delete(e.code));
@@ -75,13 +83,14 @@ function updateHUD(){
   $('player-class-label').textContent=cls.name+' · '+game.player.weapon.name;
   $('class-label').textContent=cls.name;$('weapon-name').textContent=game.player.weapon.name;$('weapon-icon').innerHTML=icon(cls.icon);
   cls.skills.forEach((skill,i)=>{const node=$('skill-'+i),cd=game.player.skillCooldowns[i];node.querySelector('.skill-name').textContent=skill.name;node.querySelector('.skill-symbol').innerHTML=icon(skill.icon);node.querySelector('.skill-time').textContent=cd>.05?cd.toFixed(1)+'s':'준비';node.classList.toggle('cooling',cd>.05);node.setAttribute('aria-label',`${i===0?'K':'L'} ${skill.name}, ${cd>.05?cd.toFixed(1)+'초 남음':'준비'}`);node.style.setProperty('--cooldown',Math.min(1,cd/(game.player.skillTimes[i]||1))*100+'%');node.title=skill.description;});
-  $('score-title').textContent=SCORES[game.stage-1].name;$('combat-counter').classList.toggle('hidden',!(game.chainTimer>0&&game.hitChain>1&&game.mode==='playing'));$('chain-count').textContent=game.hitChain||0;$('enemy-count').textContent=game.cleared?'구역 클리어':`남은 적 ${game.enemies.filter(e=>e.hp>0).length}`;
+  $('score-title').textContent=SCORES[game.biome-1].name;$('combat-counter').classList.toggle('hidden',!(game.chainTimer>0&&game.hitChain>1&&game.mode==='playing'));$('chain-count').textContent=game.hitChain||0;$('enemy-count').textContent=game.cleared?'구역 클리어':`남은 적 ${game.enemies.filter(e=>e.hp>0).length}`;
   const p=game.player;$('hp-text').textContent=`${Math.ceil(Math.max(0,p.hp))} / ${p.maxHp}`;$('hp-fill').style.width=`${Math.max(0,p.hp/p.maxHp)*100}%`;$('hp-fill').style.background=p.hp/p.maxHp<.3?'#d17d70':'#c6b98c';
   $('dash-status').textContent=p.dashCooldown>0?`대시 충전 ${p.dashCooldown.toFixed(1)}s`:'SHIFT · 대시 준비';$('relic-count').textContent=`유물 ${game.upgrades.length}`;
   $('room-index').textContent=`${String(game.stage).padStart(2,'0')} / 05`;$('room-name').textContent=game.roomName;$('shards').textContent=game.currency;$('timer').textContent=fmt(game.runTime);
   $('room-dots').querySelectorAll('i').forEach((d,i)=>{d.classList.toggle('current',i===game.stage-1);d.classList.toggle('complete',i<game.stage-1);});
-  if(!['title','select'].includes(game.mode)){$('session-label').textContent=`${String(game.stage).padStart(2,'0')} / ${game.zone.en}`;$('session-ko').textContent=game.roomName;}
-  const boss=game.boss;$('boss-hud').classList.toggle('hidden',!boss||boss.hp<=0||game.mode!=='playing');if(boss){$('boss-fill').style.width=Math.max(0,boss.hp/boss.maxHp*100)+'%';$('boss-hp').textContent=Math.max(0,Math.ceil(boss.hp));}
+  if(!['title','select','dungeon'].includes(game.mode)){$('session-label').textContent=`${String(game.stage).padStart(2,'0')} / ${game.zone.en}`;$('session-ko').textContent=game.roomName;}
+  const boss=game.boss;const intro=game.introTime>0&&game.mode==='playing';frame.classList.toggle('is-boss-intro',intro);$('boss-intro').classList.toggle('hidden',!intro);if(intro){$('zone-intro').classList.add('hidden');$('boss-intro-epithet').textContent=game.dungeon.epithet;$('boss-intro-name').textContent=game.dungeon.bossName;$('boss-intro-line').textContent='“'+game.dungeon.line+'”';$('boss-intro-hint').textContent=game.dungeon.hint;}
+  $('boss-name').textContent=game.dungeon.bossName;$('boss-phase').textContent=boss?.enraged?'PHASE II · 폭주':'PHASE I';$('boss-hud').classList.toggle('hidden',!boss||boss.hp<=0||game.mode!=='playing');if(boss){$('boss-fill').style.width=Math.max(0,boss.hp/boss.maxHp*100)+'%';$('boss-hp').textContent=Math.max(0,Math.ceil(boss.hp));}
   const portal=game.portal;const nearby=game.mode==='playing'&&portal?.active&&Math.abs(p.x+p.w/2-(portal.x+portal.w/2))<110&&Math.abs(p.y+p.h-(portal.y+portal.h))<130;
   $('interaction-hint').classList.toggle('hidden',!nearby);if(nearby)$('interaction-hint').innerHTML=`<kbd>E</kbd> ${game.stage===5?'새벽을 깨우기':'다음 구역으로'}`;
 }
@@ -91,9 +100,9 @@ function loop(now){
   const attacking=edges.has('KeyJ')||edges.has('touch-attack')||((keys.has('KeyJ')||touches.has('attack'))&&attackClock<=0);
   if(attacking)attackClock=.08;
   const input={left:keys.has('KeyA')||keys.has('ArrowLeft')||touches.has('left'),right:keys.has('KeyD')||keys.has('ArrowRight')||touches.has('right'),jumpPressed:edges.has('Space')||edges.has('KeyW')||edges.has('ArrowUp')||edges.has('touch-jump'),jumpHeld:keys.has('Space')||keys.has('KeyW')||keys.has('ArrowUp')||touches.has('jump'),attackPressed:attacking,dashPressed:edges.has('ShiftLeft')||edges.has('ShiftRight')||edges.has('touch-dash'),interactPressed:edges.has('KeyE')||edges.has('touch-interact')};
-  input.skill1Pressed=edges.has('KeyK');input.skill2Pressed=edges.has('KeyL');input.swapPressed=edges.has('KeyF');
+  input.confirmPressed=edges.has('Enter');input.skill1Pressed=edges.has('KeyK');input.skill2Pressed=edges.has('KeyL');input.swapPressed=edges.has('KeyF');
   let remaining=dt,firstStep=true;
-  while(remaining>0){const step=Math.min(remaining,1/60);game.update(step,firstStep?input:{...input,jumpPressed:false,attackPressed:false,dashPressed:false,interactPressed:false,skill1Pressed:false,skill2Pressed:false,swapPressed:false});remaining-=step;firstStep=false;}
+  while(remaining>0){const step=Math.min(remaining,1/60);game.update(step,firstStep?input:{...input,jumpPressed:false,attackPressed:false,dashPressed:false,interactPressed:false,confirmPressed:false,skill1Pressed:false,skill2Pressed:false,swapPressed:false});remaining-=step;firstStep=false;}
   edges.clear();audio.update(game);renderer.render(game,dt);ready=true;syncMode();hudClock-=dt;if(hudClock<=0){updateHUD();hudClock=.1;}if(toastTime>0){toastTime-=dt;if(toastTime<=0)$('toast').classList.add('hidden');}if(zoneIntroTime>0){zoneIntroTime-=dt;if(zoneIntroTime<=0)$('zone-intro').classList.add('hidden');}requestAnimationFrame(loop);
   } catch(error) { console.error(error);window.eclipseReportError?.(error.message); }
 }
@@ -101,4 +110,4 @@ for(const [id,bus] of [['music-volume','music'],['fx-volume','fx']]){
   const input=$(id);input.value=Math.round(audio[bus==='music'?'musicVolume':'fxVolume']*100);
   $(id+'-value').textContent=input.value+'%';input.addEventListener('input',()=>{audio.setVolume(bus,Number(input.value)/100);$(id+'-value').textContent=input.value+'%';try{localStorage.setItem('eclipse-mix',JSON.stringify({music:audio.musicVolume,fx:audio.fxVolume}));}catch{}});
 }
-soundButton();makeGame();setupClasses();requestAnimationFrame(loop);
+soundButton();makeGame();setupClasses();setupDungeons();requestAnimationFrame(loop);

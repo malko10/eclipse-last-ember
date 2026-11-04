@@ -1,18 +1,19 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import path from 'node:path';
 import {createRequire} from 'node:module';
-import {Game} from '../dist/engine.js';
+import {Game,DUNGEONS} from '../dist/engine.js';
 import {Renderer} from '../dist/renderer.js';
 const require=createRequire(import.meta.url);
-const canvasPackage=process.env.ECLIPSE_CANVAS_PACKAGE||'C:/Program Files/WindowsApps/OpenAI.CodexPrimaryRuntime.v26-1026-487-0_26.1026.487.0_x64__3k8sg7r9htsxt/dependencies/node/node_modules/@napi-rs/canvas';
+const canvasPackage=process.env.ECLIPSE_CANVAS_PACKAGE||path.resolve(path.dirname(process.execPath),'../node_modules/@napi-rs/canvas');
 const {createCanvas}=require(canvasPackage);
 function canvas(width=1280,height=720){const c=createCanvas(width,height);c.getBoundingClientRect=()=>({width,height});c.addEventListener=()=>{};return c;}
 globalThis.document={createElement:()=>canvas()};globalThis.window={devicePixelRatio:1};globalThis.localStorage={getItem:()=>null,setItem:()=>{}};
 for(const id of ['warrior','archer','mage']){
   const g=new Game(),view=canvas(),r=new Renderer(view);g.start(id);
   for(let stage=1;stage<=5;stage++){
-    g.stage=stage;g.makeRoom();g.player.x=400;g.useSkill(0);g.useSkill(1);g.attack();
+    g.start(id,DUNGEONS[stage-1].id);g.stage=5;g.makeRoom();g.finishIntro();g.player.x=400;g.useSkill(0);g.useSkill(1);g.attack();
     for(let frame=0;frame<75;frame++){g.update(1/60,{});r.render(g,1/60);}
     const data=view.getContext('2d').getImageData(0,0,1280,720).data;let bright=0;
     for(let i=0;i<data.length;i+=4)if(data[i]+data[i+1]+data[i+2]>150)bright++;
@@ -32,7 +33,7 @@ for(const storageBlocked of [false,true]){
     constructor(id=''){this.id=id;this.dataset={};this.events={};this.style={setProperty(){}};const set=new Set();this.classList={add:n=>set.add(n),remove:n=>set.delete(n),contains:n=>set.has(n),toggle(n,force){if(force??!set.has(n))set.add(n);else set.delete(n);}};this.children=new Map();this.textContent='';}
     addEventListener(type,fn){this.events[type]=fn;}setAttribute(){}focus(){}setPointerCapture(){}
     querySelector(selector){if(!this.children.has(selector))this.children.set(selector,new Element(selector));return this.children.get(selector);}
-    querySelectorAll(selector){if(this.id==='room-dots')return Array.from({length:5},(_,i)=>this.querySelector('dot'+i));if(this.id==='class-cards'&&selector==='[data-class]')return ['warrior','archer','mage'].map(id=>{const b=get('pick-'+id);b.dataset.class=id;return b;});if(this.id==='upgrade-cards')return [0,1,2].map(i=>get('upgrade-'+i));return [];}
+    querySelectorAll(selector){if(this.id==='dungeon-list')return ['forest','frost','forge','storm','void'].map(id=>{const b=get('dungeon-'+id);b.dataset.dungeon=id;return b;});if(this.id==='room-dots')return Array.from({length:5},(_,i)=>this.querySelector('dot'+i));if(this.id==='class-cards'&&selector==='[data-class]')return ['warrior','archer','mage'].map(id=>{const b=get('pick-'+id);b.dataset.class=id;return b;});if(this.id==='upgrade-cards')return [0,1,2].map(i=>get('upgrade-'+i));return [];}
     showModal(){this.open=true;}close(){this.open=false;this.events.close?.();}
   }
   function get(id){if(!elements.has(id)){let e;if(id==='game'||id.startsWith('portrait-')){e=canvas(id==='game'?1280:360,id==='game'?720:260);e.style={};e.classList={toggle(){}};e.events={};e.addEventListener=(t,fn)=>e.events[t]=fn;e.focus=()=>{};}else e=new Element(id);elements.set(id,e);}return elements.get(id);}
@@ -42,7 +43,7 @@ for(const storageBlocked of [false,true]){
   function frames(count){for(let i=0;i<count;i++){const fn=raf.shift();assert.ok(fn,'animation frame must continue');fn(++paints*16.6667);}}
   frames(2);get('start-button').events.click();assert.ok(!get('class-screen').classList.contains('hidden'),'Start reveals class choice');
   for(const id of ['warrior','archer','mage']){
-    get('pick-'+id).events.click();frames(8);assert.ok(get('player-class-label').textContent.includes(id==='warrior'?'검사':id==='archer'?'궁수':'마법사'),`${id} label updates within the HUD's 100 ms refresh interval`);
+    get('pick-'+id).events.click();frames(2);assert.ok(!get('dungeon-screen').classList.contains('hidden'));get('dungeon-forest').events.click();frames(8);assert.ok(get('player-class-label').textContent.includes(id==='warrior'?'검사':id==='archer'?'궁수':'마법사'),`${id} label updates within the HUD's 100 ms refresh interval`);
     for(const [code,slot] of [['KeyK',0],['KeyL',1]]){docEvents.keydown({code,repeat:false,target:get('game'),preventDefault(){}});frames(8);docEvents.keyup({code});assert.ok(get('skill-'+slot).querySelector('.skill-time').textContent.endsWith('s'),`${code} casts skill ${slot+1} in offline file`);}
     get('weapon-button').events.click();frames(90);get('pause-button').events.click();get('restart-button').events.click();frames(2);
   }

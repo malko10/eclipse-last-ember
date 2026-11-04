@@ -57,6 +57,7 @@ game.restart();
 for (let stage = 1; stage <= 5; stage++) {
   assert.equal(game.stage, stage);
   if (stage === 5) assert.equal(game.boss.type, 'boss');
+  game.finishIntro();
   for (const e of [...game.enemies]) game.damageEnemy(e, 10000);
   tick(game, 0.2);
   assert.ok(game.portal.active, 'cleared room opens portal');
@@ -79,7 +80,7 @@ assert.equal(game.bestStage, 5);
 // Every choice can be applied; transient room reset must preserve the selected build.
 for (const upgrade of UPGRADE_POOL) {
   const g = new Game();
-  g.start();
+  g.start(upgrade.classId||'warrior');
   g.choices = [upgrade];
   g.mode = 'upgrade';
   assert.equal(g.chooseUpgrade(upgrade.id), true);

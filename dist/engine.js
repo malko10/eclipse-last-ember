@@ -10,14 +10,22 @@ export const ZONES = [
   {name:'폭풍의 정원',en:'TEMPEST GARDENS',tag:'무너진 하늘 정원에 번개가 흐른다',color:'#b9c6ff',monsters:['폭풍 늑대','천둥 매','바람 사제'],weather:'rain'},
   {name:'공허의 왕좌',en:'THRONE OF THE ECLIPSE',tag:'별이 사라진 곳, 마지막 수문장',color:'#d8a6ef',monsters:['공허 망령','그림자 까마귀','월식의 사도'],weather:'void'},
 ];
+export const DUNGEONS = [
+  {id:'forest',name:'잊힌 숲',difficulty:'쉬움',rank:1,hp:1,damage:.8,bossHp:400,bossName:'가시왕 모르가',epithet:'뿌리 아래 잠든 왕',line:'네가 밟은 땅은, 모두 나의 몸이다.',phaseLine:'숲이여, 침입자를 삼켜라.',patterns:['roots','seeds','charge'],hint:'뿌리의 표식을 벗어나고, 낮게 날아오는 씨앗을 피하세요.'},
+  {id:'frost',name:'서리 광산',difficulty:'보통',rank:2,hp:1.15,damage:1,bossHp:520,bossName:'빙정 여왕 이스라',epithet:'영원한 겨울의 심장',line:'너의 마지막 숨결까지, 얼려 주마.',phaseLine:'이 겨울에 끝은 없다.',patterns:['icicles','shards','slam'],hint:'고드름 낙하 지점에서 이동하고, 서리 파동은 뛰어넘으세요.'},
+  {id:'forge',name:'잿불 주조장',difficulty:'어려움',rank:3,hp:1.3,damage:1.15,bossHp:650,bossName:'용광로 거인 볼칸',epithet:'천 번의 망치질로 태어난 자',line:'불순물 발견. 소각을 시작한다.',phaseLine:'노심 과열. 안전 장치 해제.',patterns:['furnace','bombard','slam'],hint:'붉은 배출구를 피하고, 망치 충격파를 뛰어넘으세요.'},
+  {id:'storm',name:'폭풍의 정원',difficulty:'극한',rank:4,hp:1.45,damage:1.3,bossHp:760,bossName:'뇌익의 군주 제피르',epithet:'하늘의 심판자',line:'땅에 묶인 자여. 폭풍을 견뎌 보아라.',phaseLine:'이제, 하늘 전체가 너의 적이다.',patterns:['lightning','gust','dive'],hint:'번개 표식에서 즉시 이동하고, 돌진은 무적 대시로 통과하세요.'},
+  {id:'void',name:'공허의 왕좌',difficulty:'악몽',rank:5,hp:1.6,damage:1.5,bossHp:900,bossName:'월식의 군주 녹스',epithet:'새벽을 삼킨 자',line:'그 작은 불씨로… 영원을 거스를 셈인가.',phaseLine:'빛도, 너의 이름도. 모두 지워 주마.',patterns:['rifts','eclipse','blink'],hint:'공허 균열을 벗어나고, 순간이동 위치와 방사 탄막을 주시하세요.'},
+];
+const PATTERN_NAMES={roots:'가시뿌리 · 표식에서 벗어나기',seeds:'독가시 씨앗 · 점프 또는 검으로 제거',charge:'뿔 돌진 · 대시로 통과',icicles:'고드름 낙하 · 빛나는 선을 피하기',shards:'빙정 부채 · 탄막 사이로 이동',slam:'대지 강타 · 충격파 점프',furnace:'용광로 배출 · 붉은 바닥을 피하기',bombard:'불꽃 포격 · 낙하 지점 이동',lightning:'낙뢰 심판 · 표식에서 이동',gust:'칼바람 · 낮은 틈으로 회피',dive:'뇌익 급습 · 대시로 통과',rifts:'공허 균열 · 보라색 표식을 피하기',eclipse:'월식 탄막 · 구체 사이로 이동',blink:'그림자 도약 · 잔상 반대편으로 이동'};
 export const CLASSES = {
   warrior:{id:'warrior',name:'검사',en:'THE VANGUARD',color:'#e7a184',hp:115,speed:350,damage:24,icon:'sword',role:'근접 · 균형',description:'검끝으로 길을 열고, 폭풍처럼 베어낸다.',passive:'체력 115 · 3연격 · 근접 공격으로 탄막 파괴',weapons:['blade','greatsword'],skills:[{name:'삼연 회오리',description:'몸을 회전해 3번 베고 적의 탄막을 지웁니다.',cooldown:5.5,icon:'sword'},{name:'여명 가르기',description:'무적 돌진 후 거대한 마무리 참격을 날립니다.',cooldown:10,icon:'flame'}]},
   archer:{id:'archer',name:'궁수',en:'THE WAYFARER',color:'#9ed6b2',hp:90,speed:390,damage:20,icon:'wing',role:'원거리 · 기동',description:'바람을 읽고, 어둠의 심장에 화살을 꽂는다.',passive:'체력 90 · 빠른 이동 · 전방의 적을 향해 조준',weapons:['longbow','repeater'],skills:[{name:'사냥꾼의 낙인',description:'관통 5연사. 맞은 적은 5초간 받는 피해 +25%.',cooldown:5,icon:'wing'},{name:'별무리 폭우',description:'표식이 찍힌 적을 우선 조준해 화살 폭풍을 부릅니다.',cooldown:11,icon:'moon'}]},
   mage:{id:'mage',name:'마법사',en:'THE STARKEEPER',color:'#c4aff5',hp:85,speed:335,damage:25,icon:'moon',role:'원거리 · 광역',description:'잊힌 별의 언어로, 새로운 새벽을 부른다.',passive:'체력 85 · 유도 마법탄 · 원소 효과',weapons:['emberstaff','froststaff'],skills:[{name:'빙결의 성좌',description:'주변 적을 동결. 다시 공격하거나 해동되면 파쇄됩니다.',cooldown:6,icon:'shield'},{name:'종말의 유성',description:'거대 운석이 폭발한 자리에 불길이 남습니다.',cooldown:12,icon:'flame'}]},
 };
 export const WEAPONS = {
-  blade:{id:'blade',name:'새벽의 장검',detail:'빠른 3연격',damage:1,rate:1,reach:96,color:'#f1d8b1'},
-  greatsword:{id:'greatsword',name:'잿빛 대검',detail:'느리지만 강한 광역 참격',damage:1.8,rate:1.65,reach:152,color:'#efb38f'},
+  blade:{id:'blade',name:'새벽의 장검',detail:'빠른 3연격',damage:1,rate:1,reach:72,color:'#f1d8b1'},
+  greatsword:{id:'greatsword',name:'잿빛 대검',detail:'느리지만 강한 광역 참격',damage:1.8,rate:1.65,reach:95,color:'#efb38f'},
   longbow:{id:'longbow',name:'달그림자 활',detail:'강한 관통 화살',damage:1.3,rate:1.65,speed:820,pierce:3,color:'#b5edd1'},
   repeater:{id:'repeater',name:'바람의 연노',detail:'빠른 연속 사격',damage:.65,rate:.65,speed:950,pierce:1,color:'#e2edbd'},
   emberstaff:{id:'emberstaff',name:'불씨 지팡이',detail:'추적 화염탄 · 폭발',damage:1.1,rate:1.7,speed:460,splash:64,color:'#f2ad82'},
@@ -43,6 +51,19 @@ export const UPGRADE_POOL = [
   { id:'reach',name:'거인의 유산',subtitle:'범위 확장',description:'검의 범위 +30%, 원거리 투사체 크기와 폭발 범위 +35%.',icon:'wing',rarity:'RARE'},
   { id:'pulse',name:'파멸의 심장',subtitle:'스킬 강화',description:'직업 스킬의 피해량이 40% 증가합니다.',icon:'bolt',rarity:'EPIC'},
   { id:'renewal',name:'생명의 씨앗',subtitle:'회복 강화',description:'다음 층 입장 시 체력을 25 회복합니다. 즉시 체력 25 회복.',icon:'heart',rarity:'RARE'},
+  {id:'riposte',classId:'warrior',name:'검성의 호흡',description:'대시로 공격을 피한 뒤 3초 안의 다음 검격 피해 +80%.',icon:'sword',rarity:'EPIC'},
+  {id:'cleaver',classId:'warrior',name:'거인의 쐐기',description:'3연격의 마지막 검격 피해가 45% 증가합니다.',icon:'sword',rarity:'EPIC'},
+  {id:'warcry',classId:'warrior',name:'불굴의 깃발',description:'스킬 사용 시 체력 8 회복. 스킬 무적 시간 최소 0.6초.',icon:'shield',rarity:'RARE'},
+  {id:'executioner',classId:'warrior',name:'결투사의 인장',description:'검격으로 처치하면 두 스킬의 남은 대기시간 -1초.',icon:'flame',rarity:'RARE'},
+  {id:'quiver',classId:'archer',name:'쌍둥이 깃털',description:'기본 공격마다 피해 45%의 화살을 한 발 더 발사합니다.',icon:'wing',rarity:'EPIC'},
+  {id:'hunter',classId:'archer',name:'붉은 추적자',description:'표식이 있는 적에게 치명타 확률 +40%.',icon:'gem',rarity:'EPIC'},
+  {id:'windstep',classId:'archer',name:'바람걸음',description:'대시 후 2초 동안 화살 발사 속도 +40%.',icon:'wing',rarity:'RARE'},
+  {id:'pinning',classId:'archer',name:'가시촉 화살',description:'기본 화살이 적을 2.5초간 둔화하고 한 번 더 관통합니다.',icon:'sword',rarity:'RARE'},
+  {id:'permafrost',classId:'mage',name:'영구동토의 심장',description:'빙결 시간이 50% 늘고 파쇄 피해가 60% 증가합니다.',icon:'shield',rarity:'EPIC'},
+  {id:'conduit',classId:'mage',name:'별빛 도체',description:'기본 마법탄 적중 시 두 스킬의 대기시간 -0.15초.',icon:'bolt',rarity:'RARE'},
+  {id:'binary',classId:'mage',name:'쌍성의 종말',description:'운석 뒤에 피해 60%의 두 번째 운석이 떨어집니다.',icon:'moon',rarity:'EPIC'},
+  {id:'cinders',classId:'mage',name:'불사조의 재',description:'마법탄 적중 시 적을 불태우고 운석 잔불 지속시간 +2초.',icon:'flame',rarity:'RARE'},
+
 ];
 
 export class Game {
@@ -52,7 +73,7 @@ export class Game {
     this.mode = 'title';
     this.time = 0;
     this.runTime = 0;
-    this.stage = 1;
+    this.stage = 1;this.dungeonId='forest';this.dungeon=DUNGEONS[0];this.biome=1;this.introTime=0;this.hazards=[];
     this.kills = 0;
     this.currency = 0;
     this.bestStage = 1;
@@ -75,7 +96,7 @@ export class Game {
     this.drops = [];
     this.enemies = [];
     this.platforms = [];
-    this.boss = null;
+    this.boss = null;this.introTime=0;this.hazards=[];
     this.shake = 0;
     this.flash = 0;
     this.hitStop = 0;
@@ -114,11 +135,12 @@ export class Game {
       hitIds: new Set(), dashHitIds: new Set(), trail: [], memory,
       classId:cls.id, weaponId:cls.weapons[0], weapon:WEAPONS[cls.weapons[0]],color:cls.color,
       skillCooldowns:[0,0],skillTimes:[0,0],skillPower:1,cooldownScale:1,rangeScale:1,
-      swapCooldown:0,rushTime:0,rushHits:new Set(),attackDuration:0,castTime:0,castDuration:0,castSkill:-1,
+      swapCooldown:0,rushTime:0,rushHits:new Set(),riposte:0,windstep:0,attackDuration:0,castTime:0,castDuration:0,castSkill:-1,
     };
   }
 
-  start(classId = this.classId) {
+  start(classId = this.classId, dungeonId = this.dungeonId) {
+    this.dungeon=DUNGEONS.find(d=>d.id===dungeonId)||DUNGEONS[0];this.dungeonId=this.dungeon.id;this.biome=this.dungeon.rank;
     this.classId = CLASSES[classId] ? classId : 'warrior';
     this.stage = 1;
     this.runTime = 0;
@@ -138,8 +160,8 @@ export class Game {
   resume() { if (this.mode === 'paused') this.setMode('playing'); }
 
   makeRoom(title = false) {
-    this.zone = ZONES[this.stage-1];
-    this.roomName = this.zone.name;
+    this.zone = ZONES[this.biome-1];
+    this.roomName = this.zone.name+' · '+(this.stage===5?'왕의 방':this.stage+'번째 방');
     this.platforms = [{ x: 0, y: FLOOR, w: W, h: 80, kind: 'ground' }];
     const layouts = [
       [[235, 530, 210], [530, 430, 210], [825, 535, 225], [1040, 345, 150]],
@@ -148,7 +170,7 @@ export class Game {
       [[165, 525, 200], [435, 375, 195], [710, 510, 200], [995, 390, 180]],
       [[210, 500, 180], [515, 380, 230], [890, 500, 180]],
     ];
-    const chosenLayout = layouts[title ? 0 : this.stage - 1].map(([x,y,w],i)=>[x+(title||this.stage===5?0:Math.floor(this.random()*25)-12),y,w]);
+    const chosenLayout = layouts[title?0:this.stage===5?4:(this.biome+this.stage-2)%4].map(([x,y,w],i)=>[x+(title||this.stage===5?0:Math.floor(this.random()*25)-12),y,w]);
     chosenLayout.forEach(([x, y, w]) => this.platforms.push({ x, y, w, h: 23, kind: 'ledge' }));
     this.enemies = [];
     this.particles = [];
@@ -157,7 +179,7 @@ export class Game {
     this.drops = [];
     this.fields = [];
     this.effects = [];
-    this.boss = null;
+    this.boss = null;this.introTime=0;this.hazards=[];
     this.shake = 0;
     this.flash = 0;
     this.hitStop = 0;
@@ -168,9 +190,7 @@ export class Game {
     const p = this.player;
     Object.assign(p, { x: 110, y: FLOOR - p.h, vx: 0, vy: 0, face: 1, grounded: true, jumps: 0, coyote: 0.1, jumpBuffer: 0, attackTime: 0, attackCooldown: 0, dashTime: 0, dashCooldown: 0, invuln: 1.2, combo: 0, comboWindow: 0, trail: [],skillCooldowns:[0,0],rushTime:0,castTime:0,castSkill:-1 });
     if (this.stage === 5) {
-      this.boss = this.spawnEnemy('boss', 950, FLOOR - 112);
-      this.spawnEnemy('flyer', 670, 420);
-      this.spawnEnemy('flyer', 1050, 350);
+      this.boss = this.spawnEnemy('boss', 960, FLOOR - 112);this.introTime=4.8;this.boss.cooldown=1.1;this.emit('sfx','bossintro');
     } else {
       this.spawnEnemy('crawler', 565, FLOOR - 40);
       this.spawnEnemy('crawler', 1000, FLOOR - 40);
@@ -195,13 +215,13 @@ export class Game {
 
   spawnEnemy(type, x, y) {
     const size = type === 'boss' ? [90, 112] : type === 'flyer' ? [32, 28] : type === 'archer' ? [30, 46] : [38, 40];
-    const hp = type === 'boss' ? 450 : (type === 'flyer' ? 29 : type === 'archer' ? 33 : 38) + (this.stage - 1) * 6;
+    const hp = type === 'boss' ? this.dungeon.bossHp : Math.round(((type === 'flyer' ? 29 : type === 'archer' ? 33 : 38) + (this.stage - 1) * 6)*this.dungeon.hp);
     const e = {
       id: ++this.id, type, x, y, w: size[0], h: size[1], vx: 0, vy: 0, face: -1,
       hp, maxHp: hp, hitFlash: 0, attackTime: 0, telegraph: 0, grounded: false,
       cooldown: 0.9 + this.random(), state: 'idle', phase: this.random() * 6.28,
       homeY: y, burn: 0, burnTick: 0, stun: 0, pattern: 0, contactHit: false,
-      biome:this.stage, name:this.zone.monsters[type==='crawler'?0:type==='flyer'?1:2],slow:0,
+      biome:this.biome, name:type==='boss'?this.dungeon.bossName:this.zone.monsters[type==='crawler'?0:type==='flyer'?1:2],slow:0,
     };
     this.enemies.push(e);
     return e;
@@ -213,6 +233,7 @@ export class Game {
     this.time += dt;
     this.updateEffects(dt);
     if (this.mode !== 'playing') return;
+    if(this.introTime>0){this.introTime=Math.max(0,this.introTime-dt);if(this.introTime<4&&(input.interactPressed||input.confirmPressed))this.finishIntro();return;}
     this.runTime += dt;
     this.shake = Math.max(0, this.shake - dt * 30);
     this.flash = Math.max(0, this.flash - dt * 3);
@@ -236,6 +257,8 @@ export class Game {
     if (this.mode !== 'playing') return;
     this.updateProjectiles(dt);
     if (this.mode !== 'playing') return;
+    this.updateHazards(dt);
+    if(this.mode!=='playing')return;
     this.updateFields(dt);
     this.updateDrops(dt);
     this.enemies = this.enemies.filter(e => e.hp > 0);
@@ -258,7 +281,7 @@ export class Game {
         this.setMode('won');
         this.emit('sfx', 'victory');
       } else {
-        this.choices = UPGRADE_POOL.filter(u => !this.upgrades.includes(u.id)).sort(() => this.random() - 0.5).slice(0, 3);
+        this.choices=this.rollRelics();
         this.setMode('upgrade');
         this.emit('sfx', 'portal');
       }
@@ -268,7 +291,7 @@ export class Game {
   updatePlayer(dt, input) {
     const p = this.player;
     const endingRush=p.rushTime>0&&p.rushTime<=dt;
-    for (const timer of ['attackTime', 'attackCooldown', 'dashTime', 'dashCooldown', 'invuln', 'comboWindow', 'jumpBuffer','swapCooldown','rushTime','castTime']) p[timer] = Math.max(0, p[timer] - dt);
+    for (const timer of ['attackTime', 'attackCooldown', 'dashTime', 'dashCooldown', 'invuln', 'comboWindow', 'jumpBuffer','swapCooldown','rushTime','castTime','riposte','windstep']) p[timer] = Math.max(0, p[timer] - dt);
     if(endingRush){const pc=center(p);this.areaHit(pc.x+p.face*50,pc.y,150*p.rangeScale,p.damage*1.8*p.skillPower);this.effects.push({type:'cleave',x:pc.x,y:pc.y,r:150,color:'#ffe3a1',face:p.face,life:.42,maxLife:.42});this.emit('sfx','heavy');p.attackTime=p.attackDuration=.26;p.combo=3;}
     p.skillCooldowns = p.skillCooldowns.map(t=>Math.max(0,t-dt));
     if(input.swapPressed && p.swapCooldown<=0){const ids=this.classDef.weapons;p.weaponId=ids[(ids.indexOf(p.weaponId)+1)%ids.length];p.weapon=WEAPONS[p.weaponId];p.swapCooldown=.35;p.attackTime=0;this.emit('notify',`${p.weapon.name} · ${p.weapon.detail}`);this.emit('sfx','upgrade');}
@@ -280,7 +303,7 @@ export class Game {
     const dir = Number(!!input.right) - Number(!!input.left);
     if (input.dashPressed && p.dashCooldown <= 0) {
       if (dir) p.face = dir;
-      p.dashTime = 0.16;
+      p.dashTime = 0.16;if(this.upgrades.includes('windstep'))p.windstep=2;
       p.dashCooldown = p.dashRecovery;
       p.invuln = Math.max(p.invuln, 0.22);
       p.vx = p.face * 990;
@@ -329,7 +352,8 @@ export class Game {
         if (e.hp > 0 && !p.hitIds.has(e.id) && overlap(this.attackBox, e)) {
           p.hitIds.add(e.id);
           const crit = this.random() < p.crit;
-          this.damageEnemy(e, p.damage * p.weapon.damage * (p.combo === 3 ? 1.65 : 1) * (crit ? 2 : 1), p.face, crit);
+          this.damageEnemy(e, p.damage * p.weapon.damage * (p.combo === 3 ? 1.65*(this.upgrades.includes('cleaver')?1.45:1) : 1)*(p.strikeBoost||1) * (crit ? 2 : 1), p.face, crit);
+          if(e.hp<=0&&this.upgrades.includes('executioner'))p.skillCooldowns=p.skillCooldowns.map(cd=>Math.max(0,cd-1));
           this.onWeaponHit(e);
         }
       });
@@ -346,6 +370,7 @@ export class Game {
   attack() {
     const p = this.player;
     if(p.classId!=='warrior'){this.rangedAttack();return;}
+    p.strikeBoost=p.riposte>0?1.8:1;p.riposte=0;
     p.combo = p.comboWindow > 0 ? (p.combo % 3) + 1 : 1;
     p.comboWindow = 0.8;
     p.attackTime = p.attackDuration = (p.combo === 3 ? 0.3 : 0.23)*(p.weaponId==='greatsword'?1.35:1);
@@ -384,23 +409,25 @@ export class Game {
 
   shootPlayer(angle,options={}) {
     const p=this.player,w=p.weapon,speed=options.speed||w.speed||700;
-    this.projectiles.push({x:p.x+p.w/2+p.face*20,y:p.y+20,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,r:(options.r||5)*p.rangeScale,hostile:false,color:options.color||w.color,life:2.6,damage:p.damage*(options.multiplier||w.damage||1),hitIds:new Set(),pierce:options.pierce??w.pierce??1,shape:p.classId==='archer'?'arrow':'orb',splash:options.splash??w.splash??0,slow:options.slow??w.slow??false,homing:options.homing??(p.classId==='mage'&&p.weaponId==='emberstaff'),mark:options.mark||false});
+    this.projectiles.push({x:p.x+p.w/2+p.face*20,y:p.y+20,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,r:(options.r||5)*p.rangeScale,hostile:false,color:options.color||w.color,life:2.6,damage:p.damage*(options.multiplier||w.damage||1),hitIds:new Set(),pierce:(options.pierce??w.pierce??1)+(this.upgrades.includes('pinning')?1:0),shape:p.classId==='archer'?'arrow':'orb',splash:options.splash??w.splash??0,slow:options.slow??(w.slow||this.upgrades.includes('pinning')),homing:options.homing??(p.classId==='mage'&&p.weaponId==='emberstaff'),mark:options.mark||false});
   }
 
   rangedAttack() {
     const p=this.player,target=this.aimTarget(),pc=center(p);
     const angle=target?Math.atan2(center(target).y-pc.y,center(target).x-pc.x):p.face>0?0:Math.PI;
-    p.combo=p.comboWindow>0?(p.combo%3)+1:1;p.comboWindow=1.2;p.attackTime=p.attackDuration=.25;p.attackCooldown=.25*p.weapon.rate*p.attackSpeed;
+    p.combo=p.comboWindow>0?(p.combo%3)+1:1;p.comboWindow=1.2;p.attackTime=p.attackDuration=.25;p.attackCooldown=.25*p.weapon.rate*p.attackSpeed*(p.windstep>0?1/1.4:1);
     if(p.weaponId==='froststaff')for(const spread of [-.14,0,.14])this.shootPlayer(angle+spread,{r:6});
     else this.shootPlayer(angle,{r:p.classId==='mage'?8:4});
+    if(this.upgrades.includes('quiver'))this.shootPlayer(angle+.08,{r:4,multiplier:p.weapon.damage*.45});
     if(p.combo===3&&this.upgrades.includes('echo'))this.shootPlayer(angle,{r:12,pierce:8,multiplier:1.5,color:'#caffec',homing:false});
     this.emit('sfx',p.classId==='mage'?'magic':'shoot');
   }
 
   onWeaponHit(e) {
     const p=this.player;
+    if(this.upgrades.includes('conduit'))p.skillCooldowns=p.skillCooldowns.map(cd=>Math.max(0,cd-.15));
     if(this.upgrades.includes('blood'))p.hp=Math.min(p.maxHp,p.hp+2);
-    if(this.upgrades.includes('ember')&&e.hp>0){e.burn=3;e.burnTick=0;}
+    if((this.upgrades.includes('ember')||this.upgrades.includes('cinders'))&&e.hp>0){e.burn=3;e.burnTick=0;}
     if(this.upgrades.includes('frost'))e.slow=Math.max(e.slow||0,2);
   }
 
@@ -408,6 +435,7 @@ export class Game {
     const p=this.player;if(p.skillCooldowns[index]>0)return false;
     const skill=this.classDef.skills[index];p.skillCooldowns[index]=skill.cooldown*p.cooldownScale;p.skillTimes[index]=p.skillCooldowns[index];
     if(this.upgrades.includes('spirit'))p.invuln=Math.max(p.invuln,1);
+    if(this.upgrades.includes('warcry')){p.hp=Math.min(p.maxHp,p.hp+8);p.invuln=Math.max(p.invuln,.6);}
     const pc=center(p),power=p.skillPower;
     this.emit('sfx',p.classId+(index+1));
     p.castTime=p.castDuration=index===0?.55:.8;p.castSkill=index;
@@ -420,8 +448,8 @@ export class Game {
       if(index===0){const angle=Math.atan2(tc.y-pc.y,tc.x-pc.x);for(let i=-2;i<=2;i++)this.shootPlayer(angle+i*.13,{pierce:8,multiplier:1.3*power,speed:950,color:'#d6ffe7',mark:true});this.effects.push({type:'fan',x:pc.x,y:pc.y,r:140,angle,color:'#c8ffe0',life:.4,maxLife:.4});}
       else{const marked=this.enemies.find(e=>e.hp>0&&e.marked>0),at=marked?center(marked):tc;this.fields.push({type:'rain',x:at.x,y:at.y,r:145,delay:.45,life:2.5,tick:0,damage:p.damage*.6*power,color:'#b8efd1'});}
     }else{
-      if(index===0){this.areaHit(pc.x,pc.y,220,p.damage*1.2*power,3.5);for(const e of this.enemies)if(e.hp>0&&Math.hypot(center(e).x-pc.x,center(e).y-pc.y)<220){e.frozen=e.type==='boss'?.4:1.1;e.shatterDamage=p.damage*1.3*power;}this.effects.push({type:'frost',x:pc.x,y:pc.y,r:220,color:'#a7eaff',life:.7,maxLife:.7});p.invuln=Math.max(p.invuln,.35);}
-      else{const target=this.aimTarget(),tc=target?center(target):{x:clamp(pc.x+p.face*240,60,1220),y:570};this.fields.push({type:'meteor',x:tc.x,y:tc.y,r:175,delay:.75,life:1,tick:0,damage:p.damage*4.4*power,color:'#f5ad83'});}
+      if(index===0){this.areaHit(pc.x,pc.y,220,p.damage*1.2*power,3.5);for(const e of this.enemies)if(e.hp>0&&Math.hypot(center(e).x-pc.x,center(e).y-pc.y)<220){e.frozen=(e.type==='boss'?.4:1.1)*(this.upgrades.includes('permafrost')?1.5:1);e.shatterDamage=p.damage*1.3*power*(this.upgrades.includes('permafrost')?1.6:1);}this.effects.push({type:'frost',x:pc.x,y:pc.y,r:220,color:'#a7eaff',life:.7,maxLife:.7});p.invuln=Math.max(p.invuln,.35);}
+      else{const target=this.aimTarget(),tc=target?center(target):{x:clamp(pc.x+p.face*240,60,1220),y:570};this.fields.push({type:'meteor',x:tc.x,y:tc.y,r:175,delay:.75,life:1,tick:0,damage:p.damage*4.4*power,color:'#f5ad83'});if(this.upgrades.includes('binary'))this.fields.push({type:'meteor',x:tc.x,y:tc.y,r:150,delay:1.65,life:1,tick:0,damage:p.damage*4.4*power*.6,color:'#d4b6ff'});}
     }
     this.burst(pc.x,pc.y,p.color,20,160);return true;
   }
@@ -442,7 +470,7 @@ export class Game {
         else this.areaHit(f.x,f.y,f.r,f.damage);
         this.effects.push({type:f.type==='meteor'?'blast':f.type,x:f.x,y:f.y,r:f.r,color:f.color,life:f.type==='meteor'?.65:.42,maxLife:f.type==='meteor'?.65:.42});
         this.burst(f.x,f.y,f.color,f.type==='meteor'?60:6,f.type==='meteor'?330:100);
-        if(f.type==='meteor'){this.emit('sfx','slam');this.shake=13;spawned.push({type:'embers',x:f.x,y:f.y,r:160,delay:0,life:2.6,tick:.35,damage:this.player.damage*.4*this.player.skillPower,color:'#f9a269'});}
+        if(f.type==='meteor'){this.emit('sfx','slam');this.shake=13;spawned.push({type:'embers',x:f.x,y:f.y,r:160,delay:0,life:2.6+(this.upgrades.includes('cinders')?2:0),tick:.35,damage:this.player.damage*.4*this.player.skillPower,color:'#f9a269'});}
       }
     }
     this.fields.push(...spawned);
@@ -532,56 +560,65 @@ export class Game {
     this.moveBody(e, dt);
   }
 
-  updateBoss(e, dt, dx, dy) {
-    const enraged = e.hp < e.maxHp * 0.45;
-    e.enraged = enraged;
-    e.vy += 1800 * dt;
-    if (e.state === 'windup') {
-      e.telegraph -= dt;
-      e.vx = move(e.vx, 0, 800 * dt);
-      if (e.telegraph <= 0) {
-        e.state = 'attack';
-        e.contactHit = false;
-        if (e.attackKind === 'slam') {
-          e.attackTime = 0.45;
-          this.shake = 12;
-          this.emit('sfx', 'slam');
-          this.burst(e.x + e.w / 2, FLOOR - 4, '#f4b28a', 35, 300);
-          for (const dir of [-1, 1]) this.projectiles.push({ x: e.x + e.w / 2, y: FLOOR - 18, vx: dir * (enraged ? 390 : 310), vy: 0, r: 18, hostile: true, color: '#ef8d73', life: 4, damage: 16, wave: true });
-          if (Math.abs(dx) < 155 && this.player.y + this.player.h > FLOOR - 90) this.hurtPlayer(18, Math.sign(dx));
-        } else if (e.attackKind === 'volley') {
-          e.attackTime = 0.4;
-          const ec = center(e), pc = center(this.player), aim = Math.atan2(pc.y - ec.y, pc.x - ec.x);
-          for (let i = -2; i <= 2; i++) {
-            const angle = aim + i * 0.2;
-            this.projectiles.push({ x: ec.x, y: ec.y, vx: Math.cos(angle) * 275, vy: Math.sin(angle) * 275, r: 8, hostile: true, color: '#e7a786', life: 4, damage: 13 });
-          }
-          this.emit('sfx', 'shoot');
-        } else {
-          e.attackTime = 0.65;
-          e.vx = e.face * (enraged ? 620 : 510);
-          this.emit('sfx', 'dash');
-        }
-      }
-    } else if (e.state === 'attack') {
-      if (e.attackKind === 'charge' && !e.contactHit && overlap(e, this.player)) { this.hurtPlayer(17, e.face); e.contactHit = true; }
-      if (e.attackTime <= 0 || (e.attackKind === 'charge' && (e.x < 28 || e.x + e.w > 1252))) {
-        e.state = 'recover'; e.cooldown = enraged ? 1 : 1.45; e.vx = 0;
-      }
-    } else if (e.state === 'recover') {
-      e.vx = 0;
-      if (e.cooldown <= 0) e.state = 'idle';
-    } else {
-      e.face = Math.sign(dx) || e.face;
-      e.vx = Math.abs(dx) > 160 ? e.face * (enraged ? 90 : 55) : 0;
-      if (e.cooldown <= 0) {
-        e.attackKind = ['slam', 'volley', 'charge'][e.pattern++ % 3];
-        e.state = 'windup';
-        e.telegraph = e.attackKind === 'charge' ? 1.05 : 0.85;
-        this.emit('notify', e.attackKind === 'slam' ? '수호자가 땅을 내리친다 · 점프!' : e.attackKind === 'charge' ? '수호자가 돌진한다 · 대시로 통과!' : '달빛 탄막 · 검으로 튕겨내세요');
-      }
+  finishIntro(){this.introTime=0;this.player.invuln=1;this.pendingActions={};}
+
+  rollRelics(){
+    const available=UPGRADE_POOL.filter(u=>!this.upgrades.includes(u.id)&&(!u.classId||u.classId===this.classId));
+    const take=pool=>pool.splice(Math.floor(this.random()*pool.length),1)[0];
+    const own=available.filter(u=>u.classId===this.classId),choices=[];
+    if(own.length){const u=take(own);choices.push(u);available.splice(available.indexOf(u),1);}
+    while(choices.length<3&&available.length)choices.push(take(available));
+    return choices;
+  }
+
+  updateHazards(dt){
+    for(const h of this.hazards){h.delay-=dt;if(h.delay>0)continue;h.life-=dt;h.tick=(h.tick||0)-dt;
+      if(h.tick<=0){h.tick=.45;const box={x:h.x-h.w/2,y:h.y-h.h,w:h.w,h:h.h};if(overlap(box,this.player))this.hurtPlayer(h.damage,Math.sign(center(this.player).x-h.x));this.burst(h.x,h.y-h.h*.4,h.color,4,90);}
     }
-    this.moveBody(e, dt);
+    this.hazards=this.hazards.filter(h=>h.life>0);
+  }
+
+  updateBoss(e,dt,dx,dy){
+    const enraged=e.hp<e.maxHp*.45;
+    if(enraged&&!e.enraged){this.emit('notify',this.dungeon.phaseLine);this.emit('sfx','bossintro');this.effects.push({type:'ring',x:center(e).x,y:center(e).y,r:150,color:this.zone.color,life:.8,maxLife:.8});}
+    e.enraged=enraged;e.vy+=1800*dt;
+    const charging=['charge','dive','blink'].includes(e.attackKind);
+    if(e.state==='windup'){
+      e.telegraph-=dt;e.vx=0;
+      if(e.telegraph<=0){e.state='attack';e.attackTime=charging?.58:.6;e.contactHit=false;this.bossAttack(e);}
+    }else if(e.state==='attack'){
+      if(charging&&!e.contactHit&&overlap(e,this.player)){this.hurtPlayer(17,e.face);e.contactHit=true;}
+      if(e.attackTime<=0||(charging&&(e.x<28||e.x+e.w>1252))){e.state='recover';e.cooldown=(enraged?1:1.5)*(1-(this.dungeon.rank-1)*.06);e.vx=0;}
+    }else if(e.state==='recover'){e.vx=0;if(e.cooldown<=0)e.state='idle';}
+    else{
+      e.face=Math.sign(dx)||e.face;e.vx=Math.abs(dx)>190?e.face*(enraged?85:50):0;
+      if(e.cooldown<=0){e.attackKind=this.dungeon.patterns[e.pattern++%3];e.state='windup';e.telegraph=enraged?.85:1.1;e.targetX=clamp(center(this.player).x,65,1215);e.targetY=center(this.player).y;e.blinkX=clamp(this.player.x-this.player.face*190,35,1150);this.emit('notify',PATTERN_NAMES[e.attackKind]);}
+    }
+    this.moveBody(e,dt);
+  }
+
+  bossAttack(e){
+    const ec=center(e),color=this.zone.color,enraged=e.enraged,k=e.attackKind;
+    const bolt=(x,y,a,speed=300,r=8,extra={})=>this.projectiles.push({x,y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r,color,hostile:true,damage:13,life:5,...extra});
+    const hazard=(x,type,w=65,h=120,delay=.6,life=.65)=>this.hazards.push({x:clamp(x,40,1240),y:FLOOR,w,h,type,delay,life,damage:16,color,tick:0});
+    if(k==='charge'||k==='dive'||k==='blink'){
+      if(k==='blink'){this.burst(ec.x,ec.y,color,30,180);e.x=e.blinkX;e.face=Math.sign(this.player.x-e.x)||1;}
+      e.vx=e.face*(k==='dive'?700:enraged?620:510);this.emit('sfx','dash');
+    }else if(k==='roots'){for(const offset of [-140,0,140])hazard(e.targetX+offset,'roots',55,100,.5+Math.abs(offset)/450,.65);this.emit('sfx','mage1');}
+    else if(k==='seeds'||k==='shards'){
+      const aim=Math.atan2(e.targetY-ec.y,e.targetX-ec.x),n=k==='shards'?4:2;
+      for(let i=-n;i<=n;i++)bolt(ec.x,ec.y,aim+i*.19,k==='shards'?300:235,k==='shards'?7:10);this.emit('sfx','magic');
+    }else if(k==='icicles'){
+      for(let i=-2;i<=2;i++)hazard(e.targetX+i*100,'icicles',35,620,.65+Math.abs(i)*.12,.35);this.emit('sfx','mage1');
+    }else if(k==='slam'){
+      for(const dir of [-1,1])bolt(ec.x,FLOOR-18,dir===1?0:Math.PI,enraged?380:300,18,{wave:true,damage:16});
+      if(Math.abs(center(this.player).x-ec.x)<145&&this.player.y+this.player.h>FLOOR-85)this.hurtPlayer(18,Math.sign(this.player.x-e.x));this.shake=10;this.emit('sfx','slam');
+    }else if(k==='furnace'){for(const x of [220,540,860,1180])hazard(x,'fire',105,160,.65,1.7);this.emit('sfx','slam');}
+    else if(k==='bombard'){for(let i=-1;i<=1;i++)hazard(e.targetX+i*180,'bomb',95,150,.7+Math.abs(i)*.2,.6);this.emit('sfx','mage2');}
+    else if(k==='lightning'){for(let i=-1;i<=1;i++)hazard(e.targetX+i*160,'lightning',45,640,.45+Math.abs(i)*.2,.45);this.emit('sfx','mage1');}
+    else if(k==='gust'){for(const y of [400,470,540])bolt(ec.x,y,e.face>0?0:Math.PI,420,12,{wave:true});this.emit('sfx','dash');}
+    else if(k==='rifts'){hazard(e.targetX,'rift',100,600,.7,.8);hazard(1280-e.targetX,'rift',100,600,1,.8);this.emit('sfx','mage2');}
+    else if(k==='eclipse'){for(let i=0;i<12;i++)bolt(ec.x,ec.y,i*Math.PI/6+this.time*.2,225,10);this.emit('sfx','magic');}
   }
 
   shatter(e){
@@ -592,7 +629,7 @@ export class Game {
   }
 
   damageEnemy(e, amount, direction = 0, crit = false, dot = false) {
-    if (e.hp <= 0) return;
+    if (e.hp <= 0||this.introTime>0) return;
     if(!dot&&e.frozen>0){this.shatter(e);if(e.hp<=0)return;}
     if(e.marked>0&&!dot)amount*=1.25;
     if(this.upgrades.includes('execution')&&e.hp/e.maxHp<.35)amount*=1.5;
@@ -612,7 +649,7 @@ export class Game {
     this.texts.push({ x: e.x + e.w / 2+(this.random()-.5)*15, y: e.y - 7, text: String(damage) + (crit ? '!' : ''), color: dot ? '#eea078' : crit ? '#f6d699' : '#e9f5ee', life: .8,maxLife:.8,heavy:!dot&&(damage>=40||crit),vx:direction*22 });
     this.burst(e.x + e.w / 2, e.y + e.h * 0.45, dot ? '#ed9262' : '#d8e8c4', dot ? 3 : 12, dot ? 75 : 220);
     if (e.hp <= 0) {
-      this.kills++;
+      this.kills++;if(e.type==='boss')this.hazards=[];
       this.burst(e.x + e.w / 2, e.y + e.h / 2, e.type === 'boss' ? '#f1c394' : '#759eae', e.type === 'boss' ? 80 : 25, 200);
       const amountShards = e.type === 'boss' ? 12 : 2 + Math.floor(this.random() * 3);
       this.drops.push({ x: e.x + e.w / 2, y: Math.min(FLOOR - 15, e.y + e.h / 2), type: 'shard', value: amountShards, phase: this.random() * 6 });
@@ -625,8 +662,10 @@ export class Game {
 
   hurtPlayer(amount, direction) {
     const p = this.player;
+    if(this.introTime>0)return;
+    if(p.dashTime>0&&this.upgrades.includes('riposte'))p.riposte=3;
     if (p.invuln > 0 || p.dashTime > 0 || this.mode !== 'playing') return;
-    const damage = Math.round(amount * p.defense);
+    const damage = Math.round(amount * p.defense*this.dungeon.damage);
     p.hp = Math.max(0, p.hp - damage);
     p.invuln = 1.05;
     p.vx = (direction || 1) * 240;
@@ -653,7 +692,7 @@ export class Game {
         if (overlap(box, this.player)) { this.hurtPlayer(b.damage || 10, Math.sign(b.vx)); b.life = 0; }
       } else {
         for (const e of this.enemies) {
-          if (e.hp > 0 && !b.hitIds.has(e.id) && overlap(box, e)) {b.hitIds.add(e.id);if(b.mark)e.marked=5;const crit=this.random()<this.player.crit;this.damageEnemy(e,b.damage*(crit?2:1),Math.sign(b.vx),crit);this.onWeaponHit(e);if(b.slow)e.slow=2.5;if(b.splash){this.effects.push({type:'blast',x:b.x,y:b.y,r:b.splash*this.player.rangeScale,color:b.color,life:.3,maxLife:.3});for(const other of this.enemies)if(other!==e&&other.hp>0&&Math.hypot(center(other).x-b.x,center(other).y-b.y)<b.splash*this.player.rangeScale)this.damageEnemy(other,b.damage*.5,Math.sign(b.vx));}if(b.pierce!==undefined&&--b.pierce<=0){b.life=0;break;}}
+          if (e.hp > 0 && !b.hitIds.has(e.id) && overlap(box, e)) {b.hitIds.add(e.id);if(b.mark)e.marked=5;const crit=this.random()<this.player.crit+(e.marked>0&&this.upgrades.includes('hunter')?.4:0);this.damageEnemy(e,b.damage*(crit?2:1),Math.sign(b.vx),crit);this.onWeaponHit(e);if(b.slow)e.slow=2.5;if(b.splash){this.effects.push({type:'blast',x:b.x,y:b.y,r:b.splash*this.player.rangeScale,color:b.color,life:.3,maxLife:.3});for(const other of this.enemies)if(other!==e&&other.hp>0&&Math.hypot(center(other).x-b.x,center(other).y-b.y)<b.splash*this.player.rangeScale)this.damageEnemy(other,b.damage*.5,Math.sign(b.vx));}if(b.pierce!==undefined&&--b.pierce<=0){b.life=0;break;}}
         }
       }
     }
@@ -695,7 +734,7 @@ export class Game {
   }
 
   chooseUpgrade(id) {
-    if (this.mode !== 'upgrade' || !this.choices.some(c => c.id === id)) return false;
+    if (this.mode !== 'upgrade' || !this.choices.some(c => c.id === id&&(!c.classId||c.classId===this.classId))) return false;
     const p = this.player;
     this.upgrades.push(id);
     if (id === 'edge') p.damage *= 1.3;

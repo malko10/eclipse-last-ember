@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {Game,CLASSES,WEAPONS,ZONES,UPGRADE_POOL} from '../dist/engine.js';
 const step=(g,n,input={})=>{for(let i=0;i<n;i++)g.update(1/60,input);};
 globalThis.localStorage={getItem:()=>null,setItem:()=>{}};
-assert.equal(Object.keys(CLASSES).length,3);assert.equal(Object.keys(WEAPONS).length,6);assert.equal(UPGRADE_POOL.length,18);
+assert.equal(Object.keys(CLASSES).length,3);assert.equal(Object.keys(WEAPONS).length,6);assert.equal(UPGRADE_POOL.length,30);
 for(const id of Object.keys(CLASSES)){
   const g=new Game();g.start(id);assert.equal(g.player.classId,id);assert.equal(g.player.hp,CLASSES[id].hp);
   const first=g.player.weaponId;g.update(1/60,{swapPressed:true});assert.notEqual(g.player.weaponId,first);step(g,25);g.update(1/60,{swapPressed:true});assert.equal(g.player.weaponId,first);
@@ -17,7 +17,7 @@ for(const id of Object.keys(CLASSES)){
   }
   g.start(id);
   for(let floor=1;floor<=5;floor++){
-    assert.equal(g.zone,ZONES[floor-1]);assert.ok(g.enemies.every(e=>e.biome===floor));
+    assert.equal(g.zone,ZONES[0]);assert.ok(g.enemies.every(e=>e.biome===1));g.finishIntro();
     g.enemies.forEach(e=>g.damageEnemy(e,100000));step(g,15);g.player.x=g.portal.x;g.player.y=614;g.update(1/60,{interactPressed:true});
     if(floor<5){assert.equal(g.mode,'upgrade');assert.ok(g.chooseUpgrade(g.choices[0].id));assert.equal(g.player.classId,id);}else assert.equal(g.mode,'won');
   }

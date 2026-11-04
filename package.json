@@ -1,7 +1,7 @@
 {
   "name": "eclipse-last-ember",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "private": true,
   "type": "module",
-  "scripts": {"start": "node server.mjs", "build:offline":"node scripts/build-offline.mjs", "test":"node --test tests/engine.test.mjs tests/playability.test.mjs tests/expansion.test.mjs tests/combat.test.mjs", "check": "node --check dist/app.js && node --check dist/engine.js && node --check dist/renderer.js && node --check dist/audio.js"}
+  "scripts": {"start": "node server.mjs", "build:offline":"node scripts/build-offline.mjs", "test":"node --test tests/engine.test.mjs tests/playability.test.mjs tests/expansion.test.mjs tests/combat.test.mjs tests/dungeons.test.mjs", "check": "node --check dist/app.js && node --check dist/engine.js && node --check dist/renderer.js && node --check dist/audio.js"}
 }

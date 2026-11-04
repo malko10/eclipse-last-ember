@@ -44,9 +44,9 @@ export class Soundscape {
     const c=this.ctx;if(!this.enabled||!c||c.state!=='running')return;
     const paused=game.mode==='paused';if(paused){this.next=c.currentTime+.08;this.music.gain.setTargetAtTime(0,c.currentTime,.18);this.mode=game.mode;return;}
     if(this.mode==='paused')this.applyVolumes();this.mode=game.mode;
-    const stage=game.stage||1,s=SCORES[stage-1];
+    const stage=game.biome||1,s=SCORES[stage-1];
     if(this.stage!==stage){this.stage=stage;this.step=0;this.next=c.currentTime+.08;this.echo.delayTime.setTargetAtTime(60/s.bpm*.75,c.currentTime,.1);}
-    this.intensity=game.mode==='playing'&&!game.cleared?(stage===5?1:.65):.18;
+    this.intensity=game.mode==='playing'&&!game.cleared?(game.boss?1:.65):.18;
     if(this.next<c.currentTime-.2)this.next=c.currentTime+.04;
     // Short look-ahead cannot queue a song's worth of notes after a tab sleeps.
     for(let count=0;this.next<c.currentTime+.15&&count<4;count++){
@@ -69,7 +69,8 @@ export class Soundscape {
       v(heavy?95:145,heavy?.19:.1,'sine',heavy?.32:.22,32);this.hiss(heavy?.15:.075,heavy?.24:.17,heavy?1700:3100);v(920,.055,'triangle',.05,230);
       if(payload.kill)v(58,.22,'triangle',.12,30);return;
     }
-    if(type==='sword'||type==='heavy'){this.hiss(type==='heavy'?.23:.13,.16,3200);v(250,.12,'triangle',.035,90);}
+    if(type==='bossintro'){[65,98,130].forEach((f,i)=>v(f,1.8,'triangle',.08,f*.95,i*.12));this.hiss(1,.12,800);}
+    else if(type==='sword'||type==='heavy'){this.hiss(type==='heavy'?.23:.13,.16,3200);v(250,.12,'triangle',.035,90);}
     else if(type==='jump')v(180,.12,'triangle',.025,390);
     else if(type==='dash'||type==='warrior2'){this.hiss(.24,.18,1800);v(150,.25,'sine',.1,40);}
     else if(type==='warrior1'){[0,.14,.28].forEach(d=>this.hiss(.16,.18,2500,d));v(150,.36,'triangle',.12,55);}
