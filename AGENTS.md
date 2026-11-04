@@ -6,6 +6,7 @@ For requests to modify this game in this chat/workspace:
 
 1. Implement the requested change in this checkout and inspect the diff. Preserve unrelated user changes.
 2. Run `npm run check`, `npm test`, and `npm run build:offline`. For graphics/runtime changes, also run the native canvas/offline tests when the canvas package is available; the latter are host-specific and not required on GitHub's Linux runner.
+   On this Windows host, `npm` may not be on PATH although `node` is available. In that case run `node --check` for dist/app.js, engine.js, renderer.js and audio.js; run `node --test tests/engine.test.mjs tests/playability.test.mjs tests/expansion.test.mjs tests/combat.test.mjs`; then run `node scripts/build-offline.mjs`. Stop on a nonzero exit code.
 3. Commit the task's source and generated offline HTML, then push `main` to GitHub `origin`. The user explicitly requested that edits here are reflected on GitHub; no separate publishing question is needed for ordinary game updates.
 4. Check the resulting GitHub Actions run and fix failures before claiming successful deployment. Include the actual game/repository URLs in the response.
 
